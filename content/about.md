@@ -13,4 +13,7 @@ meta = "false" #Do not display tags or categories
 > Nella mia carriera lavorativa ho ricoperto vari ruoli, dal SysAdmin, al Network Engineer, fino a diventare Network Architect.
 > Mi sono occupato, e mi occupo, principalmente di sistemi Linux e di sistemi e ambienti di rete complessi.
 
-> Puoi trovare ulteriori informazioni su di me nel mio profilo [linkedin](http://www.linkedin.com/in/ssasso)
+> Puoi trovare ulteriori informazioni su di me nel mio profilo [LinkedIn](http://www.linkedin.com/in/ssasso).
+
+> Oh, e questo sito è fatto con <a href="https://gohugo.io/" target="_BLANK">HUGO</a>.
+> I sorgenti sono accessibili su <a href="https://github.com/ssasso/stefano.dscnet.org" target="_BLANK">GitHub</a>.
