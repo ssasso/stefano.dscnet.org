@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione del servizio DNS</TITLE>
+<META NAME="description" CONTENT="Configurazione del servizio DNS">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node8.html">
+<LINK REL="previous" HREF="node6.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node8.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html197"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html193"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html187"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html195"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html198"
+  HREF="node8.html">Configurazione di LDAP</A>
+<B> Up:</B> <A NAME="tex2html194"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html188"
+  HREF="node6.html">Configurazione del servizio NTP</A>
+ &nbsp; <B>  <A NAME="tex2html196"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00033000000000000000">
+Configurazione del servizio DNS</A>
+</H2>
+Il servizio DNS è fondamentale per il funzionamento di Kerberos. Vedremo qui come configurare Bind versione 9.
+
+<P>
+Cominciamo modificando <SPAN  CLASS="textbf">/etc/bind/named.conf.options</SPAN>
+<PRE>
+options {
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you might need to uncomment the query-source
+        // directive below.  Previous versions of BIND always asked
+        // questions using port 53, but BIND 8.1 and later use an unprivileged
+        // port by default.
+
+        // query-source address * port 53;
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+        // forwarders {
+        //      0.0.0.0;
+        // };
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+
+        version "Version X";
+
+        allow-query {
+             192.168.0.0/24;
+             127/8;
+        };
+
+};
+</PRE>
+
+<P>
+poi <SPAN  CLASS="textbf">/etc/bind/named.conf.local</SPAN>
+<PRE>
+zone "esempio.lan" in {
+        file "/etc/bind/esempio.lan";
+        type master;
+};
+
+zone "0.168.192.in-addr.arpa" in {
+        file "/etc/bind/0.168.192.in-addr.arpa.zone";
+        type master;
+};
+</PRE>
+
+<P>
+<SPAN  CLASS="textbf">/etc/bind/esempio.lan</SPAN>
+<PRE>
+$TTL 2d
+@               IN SOA          pdc.esempio.lan.  root.pdc.esempio.lan. (
+                                2009041601      ; serial
+                                3h              ; refresh
+                                1h              ; retry
+                                1w              ; expiry
+                                1d )            ; minimum
+
+esempio.lan.            IN NS             pdc.esempio.lan.
+
+$ORIGIN esempio.lan.
+esempio.lan.            IN A              192.168.0.1
+
+; server PDC
+pdc                     IN A              192.168.0.1
+s-pdc                   IN CNAME          pdc.esempio.lan.
+ns1                     IN CNAME          pdc.esempio.lan.
+kerberos                IN CNAME          pdc.esempio.lan.
+ldap                    IN CNAME          pdc.esempio.lan.
+
+; server aggiuntivi
+s-lnx-001               IN A              192.168.0.11
+                        IN TXT            "os=RHEL5.0;srv=web+ftp (test);loc=ServRoom1/Rack2"
+web-1                   IN CNAME          s-lnx-001.esempio.lan.
+s-lnx-002               IN A              192.168.0.12
+                        IN TXT            "os=Ubuntu 8.04LTS;srv=smtp+imap+webmail+groupware;loc=ServRoom1/Rack2"
+mail-1                  IN CNAME          s-lnx-002.esempio.lan.
+groupware               IN CNAME          s-lnx-002.esempio.lan.
+s-win-001               IN A              192.168.0.51
+                        IN TXT            "os=Win2k3;srv=web+ftp (test);loc=ServRoom1/Rack2"
+web-2                   IN CNAME          s-win-001.esempio.lan.
+
+; clients
+c-lnx-001               IN A              192.168.0.101
+                        IN TXT            "os=Fedora 10;loc=Room3"
+c-lnx-002               IN A              192.168.0.102
+                        IN TXT            "os=Ubuntu 9.04;loc=Room3"
+c-lnx-003               IN A              192.168.0.103
+                        IN TXT            "os=Ubuntu 9.04;loc=Room3"
+c-lnx-004               IN A              192.168.0.104
+                        IN TXT            "os=Ubuntu 9.04;loc=Room4"
+c-lnx-005               IN A              192.168.0.105
+                        IN TXT            "os=Ubuntu 9.04;loc=Room4"
+c-lnx-006               IN A              192.168.0.106
+                        IN TXT            "os=Fedora 10;loc=Room5"
+c-lnx-007               IN A              192.168.0.107
+                        IN TXT            "os=Fedora 10;loc=Room6"
+c-lnx-008               IN A              192.168.0.108
+                        IN TXT            "os=Fedora 10;loc=Room7"
+c-lnx-009               IN A              192.168.0.109
+                        IN TXT            "os=OpenSUSE 11;loc=Room7"
+
+c-win-001               IN A              192.168.0.201
+                        IN TXT            "os=WinXP Pro SP2;loc=Room1"
+c-win-002               IN A              192.168.0.202
+                        IN TXT            "os=WinXP Pro SP2;loc=Room2"
+c-win-003               IN A              192.168.0.203
+                        IN TXT            "os=WinXP Pro SP2;loc=Room2"
+c-win-004               IN A              192.168.0.204
+                        IN TXT            "os=WinXP Pro SP2;loc=Room2"
+c-win-005               IN A              192.168.0.205
+                        IN TXT            "os=WinXP Pro SP2;loc=Room8"
+; routers
+r-main                  IN A              192.168.0.254
+                        IN TXT            "os=OBSD4.0;loc=ServRoom1/Rack1"
+r-vpngw                 IN A              192.168.0.253
+                        IN TXT            "os=OBSD4.3;loc=ServRoom1/Rack1"
+; switch
+w-sw1                   IN A              192.168.0.250
+                        IN TXT            "vlan=12;os=CCatalyst;loc=ServRoom1/Rack1"
+
+; The Kerberos realm
+_kerberos               IN TXT            "esempio.lan"
+_kerberos.it            IN TXT            "esempio.lan"
+_kerberos.srv           IN TXT            "esempio.lan"
+_kerberos._tcp          IN SRV 10 1 88    pdc.esempio.lan.
+_kerberos._udp          IN SRV 10 1 88    pdc.esempio.lan.
+_kerberos-adm._tcp      IN SRV 10 1 749   pdc.esempio.lan.
+_kerberos-master._udp   IN SRV 0  0 88    pdc.esempio.lan.
+_kpasswd._udp           IN SRV 10 1 464   pdc.esempio.lan.
+_ldap._tcp              IN SRV 10 1 389   pdc.esempio.lan.
+
+; Information Search
+_ldap_dc                IN TXT            "dc=esempio,dc=lan"
+_samba_pdc_domain       IN TXT            "ESEMPIO"
+_samba_pdc_ip_address   IN TXT            "192.168.0.1"
+</PRE>
+
+<P>
+e infine <SPAN  CLASS="textbf">/etc/bind/0.168.192.in-addr.arpa.zone</SPAN>
+<PRE>
+$TTL 2d
+@               IN SOA          pdc.esempio.lan.     root.pdc.esempio.lan. (
+                                2009041601      ; serial
+                                3h              ; refresh
+                                1h              ; retry
+                                1w              ; expiry
+                                1d )            ; minimum
+
+@        IN NS       pdc.esempio.lan.
+
+1        IN PTR      pdc.esempio.lan.
+
+11       IN PTR      s-lnx-001.esempio.lan.
+12       IN PTR      s-lnx-002.esempio.lan.
+51       IN PTR      s-win-001.esempio.lan.
+
+101      IN PTR      c-lnx-001.esempio.lan.
+102      IN PTR      c-lnx-002.esempio.lan.
+103      IN PTR      c-lnx-003.esempio.lan.
+104      IN PTR      c-lnx-004.esempio.lan.
+105      IN PTR      c-lnx-005.esempio.lan.
+106      IN PTR      c-lnx-006.esempio.lan.
+107      IN PTR      c-lnx-007.esempio.lan.
+108      IN PTR      c-lnx-008.esempio.lan.
+109      IN PTR      c-lnx-009.esempio.lan.
+
+201      IN PTR      c-win-001.esempio.lan.
+202      IN PTR      c-win-002.esempio.lan.
+203      IN PTR      c-win-003.esempio.lan.
+204      IN PTR      c-win-004.esempio.lan.
+205      IN PTR      c-win-005.esempio.lan.
+
+250      IN PTR      w-sw1.esempio.lan.
+253      IN PTR      r-vpngw.esempio.lan.
+254      IN PTR      r-main.esempio.lan.
+</PRE>
+
+<P>
+modifichiamo quindi <SPAN  CLASS="textbf">/etc/resolv.conf</SPAN>
+<PRE>
+search esempio.lan
+nameserver 192.168.0.1
+</PRE>
+riavviamo <SPAN  CLASS="textit">bind</SPAN>
+<PRE>
+# /etc/init.d/bind9 restart
+</PRE>
+e testiamo la configurazione
+<PRE>
+# nslookup
+&gt; server 192.168.0.1
+Default server: 192.168.0.1
+Address: 192.168.0.1#53
+&gt; set q=ns
+&gt; esempio.lan
+Server:         192.168.0.1
+Address:        192.168.0.1#53
+
+esempio.lan     nameserver = pdc.esempio.lan.
+&gt;
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html197"
+  HREF="node8.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html193"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html187"
+  HREF="node6.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html195"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html198"
+  HREF="node8.html">Configurazione di LDAP</A>
+<B> Up:</B> <A NAME="tex2html194"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html188"
+  HREF="node6.html">Configurazione del servizio NTP</A>
+ &nbsp; <B>  <A NAME="tex2html196"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Test di funzionamento del Single Sing-On</TITLE>
+<META NAME="description" CONTENT="Test di funzionamento del Single Sing-On">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="previous" HREF="node11.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node13.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html269"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html265"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html261"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html267"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html270"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Up:</B> <A NAME="tex2html266"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html262"
+  HREF="node11.html">Configurazione del PDC Samba</A>
+ &nbsp; <B>  <A NAME="tex2html268"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00038000000000000000">
+Test di funzionamento del Single Sing-On</A>
+</H2>
+Autentichiamoci in kerberos:
+<PRE>
+# kinit ldapmaster/admin
+ldapmaster/admin@ESEMPIO.LAN's Password:
+</PRE>
+e verifichiamo di aver ottenuto le credenziali:
+<PRE>
+# klist
+Credentials cache: FILE:/tmp/krb5cc_0
+        Principal: ldapmaster/admin@ESEMPIO.LAN
+  
+  Issued           Expires          Principal
+Apr 16 14:15:03  Apr 17 12:28:23  krbtgt/ESEMPIO.LAN@ESEMPIO.LAN
+</PRE>
+
+<P>
+proviamo quindi a fare un accesso al server LDAP:
+<PRE>
+# ldapwhoami -Y GSSAPI
+SASL/GSSAPI authentication started
+SASL username: ldapmaster/admin@ESEMPIO.LAN
+SASL SSF: 56
+SASL installing layers
+dn:krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=kerberosprincipals,ou=users,dc=esempio,dc=lan
+Result: Success (0)
+</PRE>
+e ri-verifichiamo le credenziali:
+<PRE>
+# klist
+Credentials cache: FILE:/tmp/krb5cc_0
+        Principal: ldapmaster/admin@ESEMPIO.LAN
+
+ Issued           Expires          Principal
+Apr 16 14:21:17  Apr 17 12:34:37  krbtgt/ESEMPIO.LAN@ESEMPIO.LAN
+Apr 16 14:21:25  Apr 17 12:34:37  ldap/pdc.esempio.lan@ESEMPIO.LAN
+</PRE>
+Proviamo quindi con samba:
+<PRE>
+# kdestroy
+# kinit addmachine/admin
+
+# smbclient //pdc/netlogon -k
+OS=[Unix] Server=[Samba 3.0.24]
+smb: \&gt;
+
+# klist
+Credentials cache: FILE:/tmp/krb5cc_0
+        Principal: addmachine/admin@ESEMPIO.LAN
+
+  Issued           Expires          Principal
+Apr 16 14:18:19  Apr 17 12:31:39  krbtgt/ESEMPIO.LAN@ESEMPIO.LAN
+Apr 16 14:18:24  Apr 17 12:31:39  cifs/pdc.esempio.lan@ESEMPIO.LAN
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html269"
+  HREF="node13.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html265"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html261"
+  HREF="node11.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html267"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html270"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Up:</B> <A NAME="tex2html266"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html262"
+  HREF="node11.html">Configurazione del PDC Samba</A>
+ &nbsp; <B>  <A NAME="tex2html268"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

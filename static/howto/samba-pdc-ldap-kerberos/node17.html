@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione LDAP</TITLE>
+<META NAME="description" CONTENT="Configurazione LDAP">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node18.html">
+<LINK REL="previous" HREF="node16.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node18.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html344"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html340"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html334"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html342"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html345"
+  HREF="node18.html">Configurazione Kerberos</A>
+<B> Up:</B> <A NAME="tex2html341"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html335"
+  HREF="node16.html">Configurazione NTP</A>
+ &nbsp; <B>  <A NAME="tex2html343"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html346"
+  HREF="node17.html#SECTION00044100000000000000">Client LDAP</A>
+<LI><A NAME="tex2html347"
+  HREF="node17.html#SECTION00044200000000000000">NSS-Ldap</A>
+<LI><A NAME="tex2html348"
+  HREF="node17.html#SECTION00044300000000000000">Test di NSS-Ldap</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00044000000000000000">
+Configurazione LDAP</A>
+</H2>
+
+<P>
+
+<H3><A NAME="SECTION00044100000000000000">
+Client LDAP</A>
+</H3>
+configuriamo ora i client ldap: <SPAN  CLASS="textbf">/etc/ldap/ldap.conf</SPAN>:
+<PRE>
+HOST pdc.esempio.lan
+BASE dc=esempio,dc=lan
+URI ldaps://pdc.esempio.lan/
+PORT 636
+TLS_REQCERT never
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00044200000000000000">
+NSS-Ldap</A>
+</H3>
+Configuriamo nss-ldap modificando il file <SPAN  CLASS="textbf">/etc/ldap.conf</SPAN>:
+<PRE>
+base dc=esempio,dc=lan
+uri ldaps://pdc.esempio.lan/
+port 636
+
+ldap_version 3
+bind_policy soft
+bind_timelimit 2
+timelimit 2
+scope sub
+nss_reconnect_maxsleeptime 8
+nss_reconnect_sleeptime 1
+nss_initgroups_ignoreusers root
+nss_srv_domain esempio.lan
+
+pam_password exop
+
+pam_filter objectclass=posixAccount
+pam_login_attribute uid
+pam_member_attribute memberUid
+
+nss_base_passwd ou=Users,dc=esempio,dc=lan?one
+nss_base_shadow ou=Users,dc=esempio,dc=lan?one
+nss_base_passwd ou=Computers,dc=esempio,dc=lan?one
+nss_base_shadow ou=Computers,dc=esempio,dc=lan?one
+nss_base_group  ou=Groups,dc=esempio,dc=lan?one
+
+ssl on
+</PRE>
+
+<P>
+e <SPAN  CLASS="textbf">/etc/nsswitch.conf</SPAN>
+<PRE>
+passwd:    files ldap [notfound=continue]
+shadow:    files ldap [notfound=continue]
+group:     files ldap [notfound=continue]
+
+hosts:          files dns wins
+networks:       files
+
+protocols:      db files
+services:       db files
+ethers:         db files
+rpc:            db files
+
+netgroup:       nis
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00044300000000000000">
+Test di NSS-Ldap</A>
+</H3>
+Possiamo testare il corretto funzionamento di NSS-Ldap lanciando i comandi
+<PRE>
+# getent passwd
+# getent group
+</PRE>
+e verificando che ritornino anche gli utenti e gruppi presenti nell'albero LDAP.
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html344"
+  HREF="node18.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html340"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html334"
+  HREF="node16.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html342"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html345"
+  HREF="node18.html">Configurazione Kerberos</A>
+<B> Up:</B> <A NAME="tex2html341"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html335"
+  HREF="node16.html">Configurazione NTP</A>
+ &nbsp; <B>  <A NAME="tex2html343"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

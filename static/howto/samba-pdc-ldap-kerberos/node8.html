@@ -1,0 +1,611 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione di LDAP</TITLE>
+<META NAME="description" CONTENT="Configurazione di LDAP">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node9.html">
+<LINK REL="previous" HREF="node7.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node9.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html209"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html205"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html199"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html207"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html210"
+  HREF="node9.html">Configurazione di Heimdal Kerberos</A>
+<B> Up:</B> <A NAME="tex2html206"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html200"
+  HREF="node7.html">Configurazione del servizio DNS</A>
+ &nbsp; <B>  <A NAME="tex2html208"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html211"
+  HREF="node8.html#SECTION00034100000000000000">Struttura dell'albero LDAP</A>
+<LI><A NAME="tex2html212"
+  HREF="node8.html#SECTION00034200000000000000">OpenLDAP+OpenSSL (ldaps)</A>
+<LI><A NAME="tex2html213"
+  HREF="node8.html#SECTION00034300000000000000">Demone OpenLDAP: slapd</A>
+<LI><A NAME="tex2html214"
+  HREF="node8.html#SECTION00034400000000000000">Client LDAP e NSS-Ldap</A>
+<LI><A NAME="tex2html215"
+  HREF="node8.html#SECTION00034500000000000000">Primo avvio di slapd</A>
+<LI><A NAME="tex2html216"
+  HREF="node8.html#SECTION00034600000000000000">Creazione albero LDAP iniziale</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00034000000000000000">
+Configurazione di LDAP</A>
+</H2>
+
+<H3><A NAME="SECTION00034100000000000000">
+Struttura dell'albero LDAP</A>
+</H3>
+<PRE>
+ DC=esempio,DC=lan
+ +-- OU=Groups (gruppi posix/samba)
+ +-- OU=Computers (computer samba = utenti posix)
+ +-- OU=Users (utenti posix/samba)
+     +--OU=KerberosPrincipals (principal Kerberos)
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00034200000000000000">
+OpenLDAP+OpenSSL (ldaps)</A>
+</H3>
+Iniziamo generando i certificati SSL per OpenLDAP:
+
+<P>
+creiamo la nostra certification authority
+<PRE>
+# mkdir -p /etc/ldap/ssl
+# cd /etc/ldap/ssl
+# mkdir certs
+# mkdir private
+# chmod 700 private
+# echo '01' &gt; serial
+# touch index.txt
+</PRE>
+modifichiamo <SPAN  CLASS="textbf">/etc/ldap/ssl/CA.conf</SPAN>
+<PRE>
+[ ca ]
+default_ca  = local_ca
+
+[ local_ca  ]
+dir = /etc/ldap/ssl
+certificate = /etc/ldap/ssl/cacert.pem
+database = /etc/ldap/ssl/index.txt
+new_certs_dir = /etc/ldap/ssl/certs
+private_key = /etc/ldap/ssl/private/cakey.pem
+serial = /etc/ldap/ssl/serial
+default_crl_days = 3650
+default_days = 3650
+default_md = md5
+default_bits = 1024
+encrypt_key = yes
+policy = local_ca_policy
+x509_extensions = local_ca_extensions
+unique_subject = no
+
+[ local_ca_policy ]
+commonName = supplied
+stateOrProvinceName = supplied
+countryName = supplied
+emailAddress = supplied
+organizationName = supplied
+organizationalUnitName = supplied
+
+[ local_ca_extensions ]
+subjectAltName = DNS:pdc.esempio.lan
+basicConstraints = CA:false
+nsCertType = server
+
+[ req ]
+default_bits = 2048
+default_keyfile = /etc/ldap/ssl/private/cakey.pem
+default_md = md5
+prompt = no
+distinguished_name = esempio
+x509_extensions = x509_cert
+
+[ esempio ]
+countryName = IT
+stateOrProvinceName = Padova
+localityName = Padova
+emailAddress = admin@esempio.lan
+organizationName = Esempio
+organizationalUnitName = Lab
+commonName = pdc.esempio.lan
+
+[ x509_cert ]
+nsCertType = server
+basicConstraints = CA:true
+</PRE>
+
+<P>
+e <SPAN  CLASS="textbf">/etc/ldap/ssl/LocalServer.conf</SPAN>
+<PRE>
+[ req ]
+prompt = no
+distinguished_name = esempio
+
+[ esempio ]
+countryName = IT
+stateOrProvinceName = Padova
+localityName = Padova
+emailAddress = admin@esempio.lan
+organizationName = Esempio
+organizationalUnitName  = Lab
+commonName = pdc.esempio.lan
+</PRE>
+
+<P>
+possiamo ora generare i nostri certificati:
+<PRE>
+# cd /etc/ldap/ssl/
+# export OPENSSL_CONF=/etc/ldap/ssl/CA.conf
+# openssl req -x509 -newkey rsa:1024 -out cacert.pem -outform PEM -days 3650 -passout pass:TOPSECRET
+# export OPENSSL_CONF=/etc/ldap/ssl/LocalServer.conf
+# openssl req -newkey rsa:1024 -keyout tempkey.pem -keyform PEM -out tempreq.pem -outform PEM -passout pass:TOPSECRET
+# openssl rsa &lt; tempkey.pem &gt; serverkey.pem -passin pass:TOPSECRET
+# chmod 400 serverkey.pem
+# export OPENSSL_CONF=/etc/ldap/ssl/CA.conf
+# openssl ca -in tempreq.pem -out servercrt.pem -passin pass:TOPSECRET
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00034300000000000000">
+Demone OpenLDAP: slapd</A>
+</H3>
+Passiamo ora alla configurazione OpenLDAP vera e propria:
+
+<P>
+generiamo una password cifrata per il nostro amministratore LDAP:
+<PRE>
+# slappasswd -h {MD5} -s secret1
+</PRE>
+
+<P>
+e passiamo alla modifica di <SPAN  CLASS="textbf">/etc/ldap/slapd.conf</SPAN> che deve risultare simile al seguente:
+<PRE>
+# Allow LDAPv2 binds
+allow bind_v2 
+
+# This is the main slapd configuration file. See slapd.conf(5) for more
+# info on the configuration options.
+
+#######################################################################
+# Global Directives:
+sizelimit 20
+timelimit -1
+threads 8
+
+# Schema and objectClass definitions
+include         /etc/ldap/schema/core.schema
+include         /etc/ldap/schema/cosine.schema
+include         /etc/ldap/schema/nis.schema
+include         /etc/ldap/schema/inetorgperson.schema
+include         /etc/ldap/schema/qmailuser.schema
+include         /etc/ldap/schema/samba.schema
+include         /etc/ldap/schema/hdb.schema
+
+TLSCertificateFile      /etc/ldap/ssl/servercrt.pem
+TLSCertificateKeyFile   /etc/ldap/ssl/serverkey.pem
+TLSCACertificateFile    /etc/ldap/ssl/cacert.pem
+
+sasl-host pdc.esempio.lan
+sasl-realm ESEMPIO.LAN
+
+# Mapping of SASL authentication identities to LDAP entries
+authz-regexp
+  uid=(.+),cn=(.+),cn=.+,cn=auth
+  ldap:///dc=esempio,dc=lan??sub?(|(uid=$1)(cn=$1@$2))
+
+authz-regexp
+  uidnumber=0\\\+gidnumber=0,cn=peercred,cn=external,cn=auth
+  krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+
+authz-regexp
+  gidNumber=0\\\+uidNumber=0,cn=peercred,cn=external,cn=auth
+  krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+
+authz-regexp
+  uid=(.+),cn=.+,cn=auth
+  ldap:///dc=esempio,dc=lan??sub?(|(uid=$1)(krb5PrincipalName=$1@ESEMPIO.LAN))
+
+sasl-secprops  noanonymous 
+security ssf=0
+
+pidfile         /var/run/slapd/slapd.pid
+argsfile        /var/run/slapd/slapd.args
+
+loglevel        0
+
+modulepath      /usr/lib/ldap
+moduleload      back_bdb
+moduleload      unique
+moduleload      auditlog
+
+idletimeout     30
+backend         bdb
+database        bdb
+suffix          "dc=esempio,dc=lan"
+rootdn          "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+rootpw          {MD5}5S2YxFmBmhF3WTbY37t5KQ==
+directory       "/var/lib/ldap"
+
+dbconfig set_cachesize 0 2097152 0 
+dbconfig set_lk_max_objects 1500 
+dbconfig set_lk_max_locks 1500  
+dbconfig set_lk_max_lockers 1500
+ 
+# Indices to maintain
+index mail,mailAlternateAddress,objectClass,deliveryMode,accountStatus,ou pres,eq
+index cn                    pres,sub,eq
+index sn                    pres,sub,eq
+index uid                   pres,sub,eq
+index displayName           pres,sub,eq
+index uidNumber             eq
+index gidNumber             eq
+index memberUID             eq
+index sambaSID              eq
+index sambaPrimaryGroupSID  eq
+index sambaDomainName       eq
+index mailHost              eq
+index givenName             pres,sub,eq
+index default               sub
+index krb5PrincipalName,krb5PrincipalRealm      eq,pres
+
+# Password Hash Definition
+password-hash {MD5}
+ 
+# Overlay Unique
+# Atributos unicos na base
+overlay unique
+unique_uri ldap:///dc=esempio,dc=lan?uidNumber,uid,krb5PrincipalName?sub
+unique_uri ldap:///ou=Groups,dc=esempio,dc=lan?gidNumber,cn?sub
+
+# Overlay Auditlog
+overlay auditlog
+auditlog /var/log/ldapchanges.log
+
+# Save the time that the entry gets modified, for database #
+lastmod         on
+
+include /etc/ldap/slapd.access
+</PRE>
+
+<P>
+evitiamo di inserire in <SPAN  CLASS="textbf">slapd.conf</SPAN> tutte le informazioni riguardanti i permessi dei vari utenti sull'albero, in quanto inseriremo tali informazioni nel file <SPAN  CLASS="textbf">/etc/ldap/slapd.access</SPAN>:
+<PRE>
+# Heimdal User mapping
+authz-regexp "gidNumber=0\\\+uidNumber=0,cn=peercred,cn=external,cn=auth"
+        dn="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+authz-regexp ^uid=([^,]+),cn=[^,]+,cn=auth$ uid=$1,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+
+# The userPassword by default can be changed
+# by the entry owning it if they are authenticated.
+# Others should not be able to see it, except the
+# admin entry below
+# These access lines apply to database #1 only
+access to attrs=userPassword,sambaNTPassword,sambaLMPassword,sambaPwdLastSet,sambaPwdMustChange,sambaPasswordHistory,krb5Key,krb5KeyVersionNumber
+        by dn="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" write
+        by anonymous auth
+        by self write
+        by * none
+
+# Everyone must be able to read password expiry attributes,
+# if you are not granting rootdn access to workstations.
+# Otherwise, the client system won't be able to know if
+# user's password has expired, and will prompt him/her to
+# change his/her password everytime he/she logs in.
+# The owner must also be able to write it when he/she
+# changes his/her own password.
+access to attrs=shadowLastChange,sambaPwdLastSet,sambaPwdMustChange
+        by dn="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" write
+        by self write
+        by * read 
+
+# Ensure read access to the base for things like
+# supportedSASLMechanisms.  Without this you may
+# have problems with SASL not knowing what
+# mechanisms are available and the like.
+# Note that this is covered by the 'access to *'
+# ACL below too but if you change that as people
+# are wont to do you'll still need this if you
+# want SASL (and possible other things) to work
+# happily.
+access to dn.base= by * read
+
+# The admin dn has full write access, everyone else
+# can read everything.
+access to *
+        by dn="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" write
+        by * read
+</PRE>
+
+<P>
+recuperiamo ora gli <SPAN  CLASS="textit">schemi ldap</SPAN> mancanti:
+<PRE>
+# wget http://stefano.dscnet.org/howto/samba-pdc-ldap-kerberos/files/hdb.schema -P /etc/ldap/schema/
+# wget http://stefano.dscnet.org/howto/samba-pdc-ldap-kerberos/files/qmailuser.schema -P /etc/ldap/schema/
+# cp /usr/share/doc/samba-doc/examples/LDAP/samba.schema.gz /etc/ldap/schema/
+# gunzip /etc/ldap/schema/samba.schema.gz
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00034400000000000000">
+Client LDAP e NSS-Ldap</A>
+</H3>
+Modifichiamo ora le impostazioni del client ldap: <SPAN  CLASS="textbf">/etc/ldap/ldap.conf</SPAN>
+<PRE>
+HOST pdc.esempio.lan
+BASE dc=esempio,dc=lan
+URI ldaps://pdc.esempio.lan
+PORT 636
+TLS_CACERT /etc/ldap/ssl/cacert.pem
+TLS_REQCERT never
+TIMELIMIT 2
+</PRE>
+
+<P>
+e le impostazioni di <SPAN  CLASS="textit">libnss-ldap</SPAN>: <SPAN  CLASS="textbf">/etc/ldap.conf</SPAN>
+<PRE>
+base dc=esempio,dc=lan
+uri ldaps://pdc.esempio.lan/
+rootbinddn krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+port 636
+ 
+ldap_version 3
+bind_policy soft
+bind_timelimit 2
+timelimit 2
+scope sub
+nss_reconnect_maxsleeptime 8
+nss_reconnect_sleeptime 1
+nss_initgroups_ignoreusers root
+nss_srv_domain esempio.lan
+ 
+pam_password exop
+
+pam_filter objectclass=posixAccount
+pam_login_attribute uid
+pam_member_attribute memberUid
+ 
+nss_base_passwd ou=Users,dc=esempio,dc=lan?one
+nss_base_shadow ou=Users,dc=esempio,dc=lan?one
+nss_base_passwd ou=Computers,dc=esempio,dc=lan?one
+nss_base_shadow ou=Computers,dc=esempio,dc=lan?one
+nss_base_group  ou=Groups,dc=esempio,dc=lan?one
+
+
+ssl on
+</PRE>
+
+<P>
+memorizziamo poi la password dell'amministratore ldap in <SPAN  CLASS="textbf">/etc/ldap.secret</SPAN> e rendiamolo leggibile solo a root:
+<PRE>
+# echo secret1 &gt; /etc/ldap.secret
+# chown root.root /etc/ldap.secret
+# chmod 600 /etc/ldap.secret
+</PRE>
+
+<P>
+istruiamo <SPAN  CLASS="textit">NSS</SPAN> per recuperare le informazioni degli utenti via LDAP: <SPAN  CLASS="textbf">/etc/nsswitch.conf</SPAN>
+<PRE>
+passwd:    files ldap [notfound=continue]
+shadow:    files ldap [notfound=continue]
+group:     files ldap [notfound=continue]
+
+hosts:          files dns wins
+networks:       files
+
+protocols:      db files
+services:       db files
+ethers:         db files
+rpc:            db files
+
+netgroup:       nis
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00034500000000000000">
+Primo avvio di slapd</A>
+</H3>
+Modifichiamo la configurazione dello script di avvio del server OpenLDAP: <SPAN  CLASS="textbf">/etc/default/slapd</SPAN>
+<PRE>
+SLAPD_CONF=
+SLAPD_PIDFILE=
+SLAPD_SENTINEL_FILE=/etc/ldap/noslapd
+SLAPD_OPTIONS=""
+SLAPD_USER="openldap"
+SLAPD_GROUP="openldap"
+SLAPD_SERVICES="ldap:/// ldaps:/// ldapi:///"
+export KRB5_KTNAME="/etc/ldap/ldap.keytab"
+</PRE>
+
+<P>
+stoppiamo il demone ldap e rimuoviamo il database del precedente albero:
+<PRE>
+# /etc/init.d/slapd stop
+# rm -f /var/lib/ldap/*
+</PRE>
+andiamo quindi a creare le impostazioni per il database del nuovo albero: <SPAN  CLASS="textbf">/var/lib/ldap/DB_CONFIG</SPAN>
+<PRE>
+set_cachesize           0 150000000 1
+set_lg_regionmax        262144
+set_lg_bsize            2097152
+set_lk_max_objects      1500
+set_lk_max_locks        1500
+set_lk_max_lockers      1500
+set_flags               DB_LOG_AUTOREMOVE
+</PRE>
+sistemiamo i permessi:
+<PRE>
+# chown openldap.openldap /var/lib/ldap -R
+# chown openldap.openldap /etc/ldap -R
+# find /var/lib/ldap -type d -exec chmod 700 {} \;
+# find /var/lib/ldap -type f -exec chmod 600 {} \;
+# find /etc/ldap -type d -exec chmod 700 {} \; 
+# find /etc/ldap -type f -exec chmod 600 {} \;
+# touch /var/log/ldapchanges.log 
+# chown openldap.openldap /var/log/ldapchanges.log /etc/sasldb2
+# chmod 600 /var/log/ldapchanges.log /etc/sasldb2
+</PRE>
+e configuriamo logrotate per <SPAN  CLASS="textit">/var/log/ldapchanges.log</SPAN>: <SPAN  CLASS="textbf">/etc/logrotate.d/ldapchanges</SPAN>
+<PRE>
+/var/log/ldapchanges.log {
+        rotate 5
+        weekly  
+        compress
+}
+</PRE>
+possiamo ora avviare slapd
+<PRE>
+# /etc/init.d/slapd start
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00034600000000000000">
+Creazione albero LDAP iniziale</A>
+</H3>
+Possiamo ora creare la struttura di base del nostro albero:
+
+<P>
+creiamo il file <SPAN  CLASS="textbf">/root/ldap_base.ldif</SPAN> con questo contenuto:
+<PRE>
+dn: dc=esempio,dc=lan
+dc: esempio
+objectClass: top
+objectClass: domain
+
+dn: ou=Users,dc=esempio,dc=lan
+ou: Users
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+ou: KerberosPrincipals
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Groups,dc=esempio,dc=lan
+ou: Groups
+objectClass: top
+objectClass: organizationalUnit
+
+dn: ou=Computers,dc=esempio,dc=lan
+ou: Computers
+objectClass: top
+objectClass: organizationalUnit
+
+dn: krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+objectClass: top
+objectClass: person
+objectClass: krb5Principal
+objectClass: krb5KDCEntry
+krb5PrincipalName: ldapmaster/admin@ESEMPIO.LAN
+krb5KeyVersionNumber: 1
+krb5MaxLife: 86400
+krb5MaxRenew: 604800
+krb5KDCFlags: 126
+cn: ldapmaster/admin@esempio.lan
+sn: ldapmaster/admin@esempio.lan
+userPassword: {MD5}5S2YxFmBmhF3WTbY37t5KQ==
+</PRE>
+
+<P>
+passiamo quindi ora all'importazione del file ldif nel nostro albero:
+<PRE>
+# ldapadd -x -D krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan -w secret1 -f /root/ldap_base.ldif
+</PRE>
+che dovrebbe dare come output:
+<PRE>
+adding new entry "dc=esempio,dc=lan"
+
+adding new entry "ou=Users,dc=esempio,dc=lan"
+
+adding new entry "ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+
+adding new entry "ou=Groups,dc=esempio,dc=lan"
+
+adding new entry "ou=Computers,dc=esempio,dc=lan"
+
+adding new entry "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html209"
+  HREF="node9.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html205"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html199"
+  HREF="node7.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html207"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html210"
+  HREF="node9.html">Configurazione di Heimdal Kerberos</A>
+<B> Up:</B> <A NAME="tex2html206"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html200"
+  HREF="node7.html">Configurazione del servizio DNS</A>
+ &nbsp; <B>  <A NAME="tex2html208"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

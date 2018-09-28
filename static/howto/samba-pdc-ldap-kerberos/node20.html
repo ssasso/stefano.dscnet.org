@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione Samba</TITLE>
+<META NAME="description" CONTENT="Configurazione Samba">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node21.html">
+<LINK REL="previous" HREF="node19.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node21.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html383"
+  HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html379"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html373"
+  HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html381"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html384"
+  HREF="node21.html">Join al dominio Samba</A>
+<B> Up:</B> <A NAME="tex2html380"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html374"
+  HREF="node19.html">Configurazione PAM</A>
+ &nbsp; <B>  <A NAME="tex2html382"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00047000000000000000">
+Configurazione Samba</A>
+</H2>
+Configuriamo infine samba, in modo da poter usare <SPAN  CLASS="textit">winbind</SPAN> per il cambio password e poter condividere delle cartelle locali: <SPAN  CLASS="textbf">/etc/samba/smb.conf</SPAN>
+<PRE>
+[global]
+        workgroup = ESEMPIO
+        netbios name = c-lnx-001
+        realm = ESEMPIO.LAN
+        security = domain
+        wins server = 192.168.0.1
+        use kerberos keytab = yes
+        client use spnego = yes
+        client NTLMv2 auth = yes
+
+        bind interfaces only = yes
+        interfaces = eth0, lo
+        hosts allow = 192.168.0.0/24 127.0.0.1
+
+        debug level = 2
+        log file = /var/log/samba/%m.log
+        max log size = 50
+        log level = 1
+        syslog = 0
+        utmp = Yes
+
+        idmap uid = 10000-15000
+        idmap gid = 10000-15000
+        template shell = /bin/bash
+        template homedir = /srv/home/%U
+        winbind separator = +
+        winbind enum users = yes
+        winbind enum groups = yes
+        winbind use default domain = yes
+
+        encrypt passwords = yes
+        invalid users = root
+        socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=8192 SO_SNDBUF=8192
+        local master = no
+        domain master = no
+        dns proxy = no
+
+        preserve case = yes
+        short preserve case = no
+        default case = lower
+        case sensitive = no
+
+        dos charset = cp850
+        unix charset = iso8859-1
+        display charset = LOCALE
+        restrict anonymous = 0
+
+[public]
+
+        path = /samba/public
+        writable = yes
+        browseable = yes
+        share modes = no
+        admin users = @"Domain Admins"
+</PRE>
+
+<P>
+aggiungiamo inoltre la seguente riga al file <SPAN  CLASS="textbf">/etc/request-key.conf</SPAN>
+<PRE>
+create  cifs.spnego     *       *               /usr/sbin/cifs.upcall %k %d
+</PRE>
+
+<P>
+sistemiamo cartelle e permessi:
+<PRE>
+# mkdir -p /samba/public
+# mkdir -p /srv/home
+# chgrp "Domain Admins" /samba/public
+# rm -rf /etc/samba/*tdb
+# rm -rf /var/lib/samba/*tdb
+# rm -rf /var/lib/samba/*dat
+# rm -rf /var/log/samba/*
+# rm -rf /var/cache/samba/*
+</PRE>
+e avviamo samba e winbind:
+<PRE>
+# /etc/init.d/samba start
+# /etc/init.d/winbind start
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html383"
+  HREF="node21.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html379"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html373"
+  HREF="node19.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html381"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html384"
+  HREF="node21.html">Join al dominio Samba</A>
+<B> Up:</B> <A NAME="tex2html380"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html374"
+  HREF="node19.html">Configurazione PAM</A>
+ &nbsp; <B>  <A NAME="tex2html382"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

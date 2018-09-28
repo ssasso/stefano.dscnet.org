@@ -1,0 +1,12 @@
+{{ with .Page.Resources.Match "**.pdf" }}
+<div class="attachments">
+<u><i>Attachments:</i></u>
+<ul>
+	{{ range . }}
+	<li>
+		<a target="_blank" href="{{ .Permalink }}">{{ .Name }}</a>
+	</li>
+	{{ end }}
+</ul>
+</div>
+{{ end }}

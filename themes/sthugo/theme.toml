@@ -1,0 +1,12 @@
+name = "StHugo"
+license = "MIT"
+licenselink = "LICENSE.md"
+description = "StHugo Theme, based on 'kiera' theme"
+homepage = "http://stefano.dscnet.org"
+tags = ["blog","minimal","responsive","kiera"]
+features = ["blog","google-analytics","font-awesome"]
+min_version = "0.30.2"
+
+[author]
+  name = "Stefano Sasso"
+  homepage = "http://stefano.dscnet.org/"

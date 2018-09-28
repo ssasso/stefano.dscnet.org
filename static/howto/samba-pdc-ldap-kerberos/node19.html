@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione PAM</TITLE>
+<META NAME="description" CONTENT="Configurazione PAM">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node20.html">
+<LINK REL="previous" HREF="node18.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node20.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html371"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html367"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html361"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html369"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html372"
+  HREF="node20.html">Configurazione Samba</A>
+<B> Up:</B> <A NAME="tex2html368"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html362"
+  HREF="node18.html">Configurazione Kerberos</A>
+ &nbsp; <B>  <A NAME="tex2html370"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00046000000000000000">
+Configurazione PAM</A>
+</H2>
+Configuriamo quindi PAM (Pluggable Authentication Modules) modificando i seguenti files:
+
+<P>
+<SPAN  CLASS="textbf">/etc/pam.d/common-auth</SPAN>
+<PRE>
+auth    sufficient        pam_unix.so nullok_secure
+auth    sufficient        pam_krb5.so use_first_pass
+auth    required          pam_deny.so
+</PRE>
+<SPAN  CLASS="textbf">/etc/pam.d/common-account</SPAN>
+<PRE>
+account sufficient        pam_unix.so
+account sufficient        pam_krb5.so
+account required          pam_deny.so
+</PRE>
+<SPAN  CLASS="textbf">/etc/pam.d/common-password</SPAN>
+<PRE>
+password  sufficient   pam_unix.so nullok obscure md5
+password  required     pam_winbind.so
+</PRE>
+<SPAN  CLASS="textbf">/etc/pam.d/common-session</SPAN>
+<PRE>
+session      optional      pam_unix.so
+session      optional      pam_krb5.so
+session      optional      pam_mkhomedir.so skel=/etc/skel/ umask=077
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html371"
+  HREF="node20.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html367"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html361"
+  HREF="node18.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html369"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html372"
+  HREF="node20.html">Configurazione Samba</A>
+<B> Up:</B> <A NAME="tex2html368"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html362"
+  HREF="node18.html">Configurazione Kerberos</A>
+ &nbsp; <B>  <A NAME="tex2html370"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

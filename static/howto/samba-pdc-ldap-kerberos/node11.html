@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione del PDC Samba 3</TITLE>
+<META NAME="description" CONTENT="Configurazione del PDC Samba 3">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node12.html">
+<LINK REL="previous" HREF="node10.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node12.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html254"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html250"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html244"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html252"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html255"
+  HREF="node12.html">Test di funzionamento del</A>
+<B> Up:</B> <A NAME="tex2html251"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html245"
+  HREF="node10.html">Configurazione di SASL</A>
+ &nbsp; <B>  <A NAME="tex2html253"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html256"
+  HREF="node11.html#SECTION00037100000000000000">Configurazione principale: smb.conf</A>
+<LI><A NAME="tex2html257"
+  HREF="node11.html#SECTION00037200000000000000">smbldap-tools</A>
+<LI><A NAME="tex2html258"
+  HREF="node11.html#SECTION00037300000000000000">Sistemazione (popolamento) della struttura LDAP</A>
+<LI><A NAME="tex2html259"
+  HREF="node11.html#SECTION00037400000000000000">Creazione di un utente</A>
+<LI><A NAME="tex2html260"
+  HREF="node11.html#SECTION00037500000000000000">Restart dei servizi</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00037000000000000000">
+Configurazione del PDC Samba 3</A>
+</H2>
+
+<H3><A NAME="SECTION00037100000000000000">
+Configurazione principale: smb.conf</A>
+</H3>
+Passiamo ora alla configurazione di samba:
+
+<P>
+il nostro <SPAN  CLASS="textbf">/etc/samba/smb.conf</SPAN> deve risultare simile al seguente:
+<PRE>
+[global]
+
+        workgroup = ESEMPIO
+        realm = ESEMPIO.LAN
+        netbios name = pdc
+        server string = PDC/KDC
+        use kerberos keytab = yes
+        use spnego = yes
+        client NTLMv2 auth = yes
+        username map = /etc/samba/usermap
+
+        debug level = 1
+        log file = /var/log/samba/%m.log
+        max log size = 5000
+        syslog = 0
+        log level = 1
+        utmp = Yes
+
+        guest account = nobody
+        map to guest = Never
+        admin users = root addmachine @"Domain Admins"
+        enable privileges = yes
+
+        security = user
+        encrypt passwords = yes
+        os level = 255
+        local master = yes
+        domain master = yes
+        preferred master = yes
+        domain logons = yes
+
+        keepalive = 20
+        time server = yes
+        preserve case = yes
+        short preserve case = yes
+        case sensitive = no 
+        null passwords = no 
+
+        logon script = %U.bat
+        logon path =
+        logon drive = H:
+        logon home =
+
+        bind interfaces only = yes
+        interfaces = eth0, lo
+        hosts allow = 192.168.0.0/24 127.
+        wins support = yes
+        dns proxy = yes
+
+        passdb backend = ldapsam:ldaps://pdc.esempio.lan/
+        ldap admin dn = krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+        ldap suffix = dc=esempio,dc=lan
+        ldap group suffix = ou=Groups
+        ldap user suffix = ou=Users
+        ldap machine suffix = ou=Computers
+        ldap idmap suffix = ou=Idmap
+        ldap ssl = On
+        ldap delete dn = Yes
+        ldapsam:trusted = yes
+        idmap backend = ldap:ldaps://pdc.esempio.lan/
+        idmap uid = 10000-15000
+        idmap gid = 10000-15000
+
+        
+        #
+        # Meccanismi interni a samba per tenere sincronizzate le password samba e ldap/kerberos
+        #
+        pam password change = no
+        ldap passwd sync = yes
+        unix password sync = no  
+
+        socket options = TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=8192 SO_SNDBUF=8192
+
+        add machine script = /usr/sbin/smbldap-useradd -w "%u"
+        add user script = /usr/sbin/smbldap-useradd -m -a "%u"
+        delete user script = /usr/sbin/smbldap-userdel "%u"
+        add group script = /usr/sbin/smbldap-groupadd -p "%g"
+        delete group script = /usr/sbin/smbldap-groupdel "%g"
+        add user to group script = /usr/sbin/smbldap-groupmod -m "%u" "%g"
+        delete user from group script = /usr/sbin/smbldap-groupmod -x "%u" "%g"
+        set primary group script = /usr/sbin/smbldap-usermod -g "%g" "%u"
+
+        dos charset = cp850
+        unix charset = iso8859-1
+        display charset = LOCALE
+        restrict anonymous = 0
+
+        # Comando per loggare login e logoff
+        root preexec = /etc/samba/log_access_login.bash "%L" "%U" "%G" "%H" "%u" "%S" "%I" "%m" ON
+        root postexec = /etc/samba/log_access_login.bash "%L" "%U" "%G" "%H" "%u" "%S" "%I" "%m" OFF
+
+[homes]
+
+        comment = Home Directories
+        valid users = %S
+        browseable = no
+        writable = yes
+        admin users = %u
+        write list = %u
+        read list = %u
+        create mask = 0700
+        directory mask = 0700
+
+[netlogon]
+
+        path = /samba/netlogon
+        writable = yes
+        browseable = no
+        share modes = no
+        admin users = @"Domain Admins"
+</PRE>
+
+<P>
+modifichiamo anche il file <SPAN  CLASS="textbf">/etc/samba/usermap</SPAN>:
+<PRE>
+addmachine = ESEMPIO.LAN\addmachine/admin
+root = ESEMPIO.LAN\root/admin
+</PRE>
+
+<P>
+e scarichiamo lo script <SPAN  CLASS="textit">log_access_login.bash</SPAN> che ci servirà per loggare gli accessi al dominio:
+<PRE>
+# wget http://stefano.dscnet.org/howto/samba-pdc-ldap-kerberos/files/log_access_login.bash -P /etc/samba
+# chmod 700 /etc/samba/log_access_login.bash
+</PRE>
+modifichiamo inoltre <SPAN  CLASS="textbf">/etc/request-key.conf</SPAN> aggiungendo
+<PRE>
+create  cifs.spnego     *       *               /usr/sbin/cifs.upcall %k %d
+</PRE>
+
+<P>
+sistemiamo ora le cartelle necessarie:
+<PRE>
+# mkdir -p /samba/netlogon
+# mkdir -p /var/log/samba/login-logoff
+# rm -rf /etc/samba/*tdb
+# rm -rf /var/lib/samba/*tdb
+# rm -rf /var/lib/samba/*dat
+# rm -f /var/log/samba/*
+</PRE>
+facciamo memorizzare a samba la password dell'utente ldap da usare per la connessione:
+<PRE>
+# smbpasswd -w secret1
+</PRE>
+che restituirà questo output:
+<PRE>
+Setting stored password for "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" in secrets.tdb
+</PRE>
+riavviamo ora samba:
+<PRE>
+# /etc/init.d/samba restart
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00037200000000000000">
+smbldap-tools</A>
+</H3>
+Recuperiamo ora <SPAN  CLASS="textit">(e segnamocelo)</SPAN> il <SPAN  CLASS="textit">SID</SPAN> del nostro nuovo dominio samba:
+<PRE>
+# net getlocalsid ESEMPIO
+</PRE>
+
+<P>
+e andiamo a creare il file <SPAN  CLASS="textbf">/etc/smbldap-tools/smbldap.conf</SPAN>, inserendo al suo interno il <SPAN  CLASS="textit">SID</SPAN> appena recuperato.
+<PRE>
+SID="S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX"
+sambaDomain="ESEMPIO"
+realm="ESEMPIO.LAN"
+slaveLDAP="ldap://pdc.esempio.lan"
+slavePort="389"
+masterLDAP="ldap://pdc.esempio.lan"
+masterPort="389"
+ldapTLS="1"
+verify="require"
+cafile="/etc/ldap/ssl/cacert.pem"
+clientcert="/etc/ldap/ssl/servercrt.pem"
+clientkey="/etc/ldap/ssl/serverkey.pem"
+suffix="dc=esempio,dc=lan"
+usersdn="ou=Users,${suffix}"
+computersdn="ou=Computers,${suffix}"
+groupsdn="ou=Groups,${suffix}"
+idmapdn="ou=Idmap,${suffix}"
+sambaUnixIdPooldn="sambaDomainName=ESEMPIO,${suffix}"
+scope="sub"
+hash_encrypt="MD5"
+crypt_salt_format="%s"
+userLoginShell="/bin/bash"
+userHome="/srv/home/%U"
+userHomeDirectoryMode="700"
+userGecos="LDAP-Kerberos User"
+defaultUserGid="513"
+defaultComputerGid="515"
+skeletonDir="/etc/skel"
+defaultMaxPasswordAge="45"
+userSmbHome="\\pdc\%U"
+#userProfile="\\pdc\profiles\%U"
+userHomeDrive="H:"
+userScript="%U.bat"
+mailDomain="esempio.lan"
+with_smbpasswd="0"
+smbpasswd="/usr/bin/smbpasswd"
+with_slappasswd="0"
+slappasswd="/usr/sbin/slappasswd"
+# no_banner="1"
+</PRE>
+creiamo anche il file <SPAN  CLASS="textbf">/etc/smbldap-tools/smbldap_bind.conf</SPAN>
+<PRE>
+slaveDN="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+slavePw="secret1"
+masterDN="krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan"
+masterPw="secret1"
+</PRE>
+
+<P>
+recuperiamo ora le versioni modificate di alcuni script smbldap:
+<PRE>
+# wget http://stefano.dscnet.org/howto/samba-pdc-ldap-kerberos/files/smbldap-useradd -P /tmp/
+# wget http://stefano.dscnet.org/howto/samba-pdc-ldap-kerberos/files/smbldap-passwd -P /tmp/
+# mv /tmp/smbldap-useradd /usr/sbin/
+# mv /tmp/smbldap-passwd /usr/sbin/
+# chmod +x /usr/sbin/smbldap-useradd
+# chmod +x /usr/sbin/smbldap-passwd
+</PRE>
+
+<P>
+sistemiamo cartelle e permessi
+<PRE>
+# chmod 600 /etc/smbldap-tools/ -R
+# chmod 700 /usr/sbin/smbldap-*
+# mkdir -p /srv/home
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00037300000000000000">
+Sistemazione (popolamento) della struttura LDAP</A>
+</H3>
+Sistemiamo quindi la struttura <SPAN  CLASS="textit">LDAP</SPAN> con le informazioni <SPAN  CLASS="textit">SAMBA</SPAN>:
+<PRE>
+# smbldap-populate -a root -k 0 -m 0
+</PRE>
+il comando dovrebbe restituire
+<PRE>
+Populating LDAP directory for domain ESEMPIO (S-1-5-21-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX)
+(using builtin directory structure)
+
+entry dc=esempio,dc=lan already exist.
+entry ou=Users,dc=esempio,dc=lan already exist.
+entry ou=Groups,dc=esempio,dc=lan already exist.
+entry ou=Computers,dc=esempio,dc=lan already exist.
+adding new entry: ou=Idmap,dc=esempio,dc=lan
+adding new entry: uid=root,ou=Users,dc=esempio,dc=lan
+adding new entry: uid=nobody,ou=Users,dc=esempio,dc=lan
+adding new entry: cn=Domain Admins,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Domain Users,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Domain Guests,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Domain Computers,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Administrators,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Account Operators,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Print Operators,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Backup Operators,ou=Groups,dc=esempio,dc=lan
+adding new entry: cn=Replicators,ou=Groups,dc=esempio,dc=lan
+entry sambaDomainName=ESEMPIO,dc=esempio,dc=lan already exist. Updating it...
+
+Please provide a password for the domain root:
+Changing UNIX and samba passwords for root
+New password:
+Retype new password:
+</PRE>
+
+<P>
+È necessario ora effettuare alcune modifiche nella struttura creata:
+
+<P>
+iniziamo modificando il primo User ID libero: creiamo il file <SPAN  CLASS="textbf">/root/ldap_nextuid.ldif</SPAN>:
+<PRE>
+dn: sambaDomainName=ESEMPIO,dc=esempio,dc=lan
+replace: uidNumber
+uidNumber: 2000
+-
+replace: gidNumber
+gidNumber: 2000
+</PRE>
+lanciamo poi
+<PRE>
+# ldapmodify -x -D "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" -w secret1 -f /root/ldap_nextuid.ldif
+</PRE>
+
+<P>
+modifiche per l'utente root inserito in LDAP: <SPAN  CLASS="textbf">/root/ldap_rootuser.ldif</SPAN>
+<PRE>
+dn: uid=root,ou=Users,dc=esempio,dc=lan
+changetype: modify
+add: objectClass
+objectClass: krb5Principal
+objectClass: krb5KDCEntry
+-
+add: krb5KeyVersionNumber
+krb5KeyVersionNumber: 1
+-
+add: krb5PrincipalName
+krb5PrincipalName: root/admin@ESEMPIO.LAN
+-
+add: krb5KDCFlags
+krb5KDCFlags: 126
+-
+add: krb5MaxRenew
+krb5MaxRenew: 604800
+-
+add: krb5MaxLife
+krb5MaxLife: 86400
+-
+replace: homeDirectory
+homeDirectory: /root
+-
+replace: gidNumber
+gidNumber: 512
+</PRE>
+lanciamo quindi:
+<PRE>
+# ldapmodify -x -D "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" -w secret1 -f /root/ldap_rootuser.ldif
+</PRE>
+
+<P>
+modifiche per l'utente nobody inserito in LDAP: <SPAN  CLASS="textbf">/root/ldap_nobodyuser.ldif</SPAN>
+<PRE>
+dn: uid=nobody,ou=Users,dc=esempio,dc=lan
+changetype: modify
+replace: gidNumber
+gidNumber: 514
+</PRE>
+lanciamo poi:
+<PRE>
+# ldapmodify -x -D "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" -w secret1 -f /root/ldap_nobodyuser.ldif
+</PRE>
+
+<P>
+Creiamo ora un utente per l'aggiunta di macchine al dominio samba/kerberos:
+<PRE>
+# smbldap-useradd -a -m addmachine
+# smbldap-passwd addmachine
+</PRE>
+modifichiamo anche per questo utente alcuni dati: creiamo quindi il file <SPAN  CLASS="textbf">/root/ldap_addmachineuser.ldif</SPAN>
+<PRE>
+dn: uid=addmachine,ou=Users,dc=esempio,dc=lan
+replace: krb5PrincipalName
+krb5PrincipalName: addmachine/admin@ESEMPIO.LAN
+</PRE>
+e lanciamo poi:
+<PRE>
+# ldapmodify -x -D "krb5PrincipalName=ldapmaster/admin@ESEMPIO.LAN,ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan" -w secret1 -f /root/ldap_addmachineuser.ldif
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00037400000000000000">
+Creazione di un utente</A>
+</H3>
+Aggiungiamo ora un utente "normale":
+<PRE>
+# smbldap-useradd -m -a stefano
+# smbldap-passwd stefano
+# smbldap-userinfo stefano
+</PRE>
+Se vogliamo che un utente possa loggarsi correttamente anche in un desktop GNU/Linux dobbiamo "clonare" in LDAP anche le informazioni sui vari gruppi a cui l'utente dovrà appartenere per poter operare correttamente nel suo ambiente di lavoro (gruppi <SPAN  CLASS="textit">video</SPAN>, <SPAN  CLASS="textit">plugdev</SPAN>, <SPAN  CLASS="textit">disk</SPAN>, <SPAN  CLASS="textit">fuse</SPAN>, ...) e inserire l'utente in tali gruppi, sempre usando i tools <SPAN  CLASS="textit">smbldap</SPAN>.
+
+<P>
+
+<H3><A NAME="SECTION00037500000000000000">
+Restart dei servizi</A>
+</H3>
+Riavviamo quindi come ultima cosa tutti i servizi.
+<PRE>
+# /etc/init.d/bind9 restart
+# /etc/init.d/slapd restart
+# /etc/init.d/samba restart
+# /etc/init.d/heimdal-kdc restart
+# /etc/init.d/heimdal-kcm restart
+# /etc/init.d/ntp restart
+# /etc/init.d/saslauthd restart
+# /etc/init.d/openbsd-inetd restart
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html254"
+  HREF="node12.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html250"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html244"
+  HREF="node10.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html252"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html255"
+  HREF="node12.html">Test di funzionamento del</A>
+<B> Up:</B> <A NAME="tex2html251"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html245"
+  HREF="node10.html">Configurazione di SASL</A>
+ &nbsp; <B>  <A NAME="tex2html253"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

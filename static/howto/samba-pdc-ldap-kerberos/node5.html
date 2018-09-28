@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione iniziale del sistema</TITLE>
+<META NAME="description" CONTENT="Configurazione iniziale del sistema">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node6.html">
+<LINK REL="previous" HREF="node4.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node6.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html173"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html169"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html163"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html171"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html174"
+  HREF="node6.html">Configurazione del servizio NTP</A>
+<B> Up:</B> <A NAME="tex2html170"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html164"
+  HREF="node4.html">Configurazione del server</A>
+ &nbsp; <B>  <A NAME="tex2html172"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00031000000000000000">
+Configurazione iniziale del sistema</A>
+</H2>
+Ipotizziamo che il nostro server PDC abbia indirizzo IP <SPAN  CLASS="textit">192.168.0.1</SPAN>, hostname <SPAN  CLASS="textit">pdc</SPAN> e dominio <SPAN  CLASS="textit">esempio.lan</SPAN>.
+
+<P>
+Innanzitutto è necessario verificare che il nome dell'host (hostname) sia corretto, e che sia impostato un dominio per l'host stesso. Verifichiamo quindi le impostazioni in <SPAN  CLASS="textbf">/etc/hosts</SPAN> e <SPAN  CLASS="textbf">/etc/hostname</SPAN>:
+
+<P>
+<SPAN  CLASS="textbf">/etc/hosts</SPAN>
+<PRE>
+192.168.0.1 pdc.esempio.lan pdc
+127.0.0.1 localhost.localdomain localhost
+</PRE>
+
+<P>
+<SPAN  CLASS="textbf">/etc/hostname</SPAN>
+<PRE>
+pdc
+</PRE>
+
+<P>
+rimuoviamo ora dei pacchetti inutili:
+<PRE>
+# apt-get remove -y --purge dhcp3-client dhcp-client
+</PRE>
+rimuoviamo anche <SPAN  CLASS="textit">apparmor</SPAN>, che potrebbe darci dei problemi con l'integrazione
+<PRE>
+# apt-get remove -y --purge apparmor apparmor-utils apparmor-profiles
+</PRE>
+procediamo ora con l'installazione dei pacchetti necessari:
+<PRE>
+# DEBIAN_FRONTEND=noninteractive
+# export DEBIAN_FRONTEND=noninteractive
+# apt-get update
+# apt-get install -y bind9 openssl ssl-cert libsasl2-2 libsasl2-modules sasl2-bin libsasl2-modules-gssapi-heimdal \
+libnss-ldap slapd ldap-utils libpam-krb5 heimdal-kdc heimdal-clients-x heimdal-clients libkrb5-dev heimdal-docs \
+heimdal-servers-x heimdal-servers libkadm5clnt7-heimdal libkadm5srv8-heimdal libhdb9-heimdal libgssapi2-heimdal \
+libkrb5-22-heimdal libasn1-8-heimdal krb5-config heimdal-kcm smbclient samba samba-common samba-doc smbfs \
+libsmbclient cupsys-common libcupsys2 smbldap-tools keyutils gzip ntp ipcalc
+# unset DEBIAN_PRIORITY
+# unset DEBIAN_FRONTEND
+</PRE>
+
+<P>
+iniziamo fermando tutti i servizi appena installati
+<PRE>
+# /etc/init.d/samba stop
+# /etc/init.d/slapd stop
+# /etc/init.d/saslauthd stop
+# /etc/init.d/heimdal-kcm stop
+# /etc/init.d/heimdal-kdc stop
+# /etc/init.d/bind9 stop
+# /etc/init.d/ntp stop
+</PRE>
+ed effettuiamo un backup dei file di configurazione
+<PRE>
+# mkdir -p /root/backup-confs/
+# mkdir -p /root/backup-confs/etc/
+# mkdir -p /root/backup-confs/etc/ldap/
+# mkdir -p /root/backup-confs/etc/default/
+# mkdir -p /root/backup-confs/etc/samba/
+# mkdir -p /root/backup-confs/etc/network/
+# cp -Rap /etc/hosts /root/backup-confs/etc/
+# cp -Rap /etc/resolv.conf /root/backup-confs/etc/
+# cp -Rap /etc/ldap.conf /root/backup-confs/etc/
+# cp -Rap /etc/inetd.conf /root/backup-confs/etc/
+# cp -Rap /etc/nsswitch.conf /root/backup-confs/etc/
+# cp -Rap /etc/krb5.conf /root/backup-confs/etc/
+# cp -Rap /etc/ntp.conf /root/backup-confs/etc/
+# cp -Rap /etc/request-key.conf /root/backup-confs/etc/
+# cp -Rap /etc/network/interfaces /root/backup-confs/etc/network/
+# cp -Rap /etc/samba/smb.conf /root/backup-confs/etc/samba/
+# cp -Rap /etc/bind/ /root/backup-confs/etc/
+# cp -Rap /etc/ldap/ /root/backup-confs/etc/
+# cp -Rap /etc/default/slapd /root/backup-confs/etc/default/
+# cp -Rap /etc/default/saslauthd /root/backup-confs/etc/default/
+# cp -Rap /etc/default/bind9 /root/backup-confs/etc/default/
+# cp -Rap /usr/sbin/smbldap-useradd /root/backup-confs/
+# cp -Rap /usr/sbin/smbldap-passwd /root/backup-confs/
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html173"
+  HREF="node6.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html169"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html163"
+  HREF="node4.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html171"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html174"
+  HREF="node6.html">Configurazione del servizio NTP</A>
+<B> Up:</B> <A NAME="tex2html170"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html164"
+  HREF="node4.html">Configurazione del server</A>
+ &nbsp; <B>  <A NAME="tex2html172"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

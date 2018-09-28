@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione di Heimdal Kerberos</TITLE>
+<META NAME="description" CONTENT="Configurazione di Heimdal Kerberos">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node10.html">
+<LINK REL="previous" HREF="node8.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node10.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html227"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html223"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html217"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html225"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html228"
+  HREF="node10.html">Configurazione di SASL</A>
+<B> Up:</B> <A NAME="tex2html224"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html218"
+  HREF="node8.html">Configurazione di LDAP</A>
+ &nbsp; <B>  <A NAME="tex2html226"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html229"
+  HREF="node9.html#SECTION00035100000000000000">Rimozione dei servizi inutili</A>
+<LI><A NAME="tex2html230"
+  HREF="node9.html#SECTION00035200000000000000">Kerberos KDC</A>
+<LI><A NAME="tex2html231"
+  HREF="node9.html#SECTION00035300000000000000">Inizializzazione reame Kerberos</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00035000000000000000">
+Configurazione di Heimdal Kerberos</A>
+</H2>
+
+<H3><A NAME="SECTION00035100000000000000">
+Rimozione dei servizi inutili</A>
+</H3>
+Iniziamo modificando il file <SPAN  CLASS="textbf">/etc/inetd.conf</SPAN> e rimuoviamo alcuni servizi kerberizzati attivati di default:
+<PRE>
+....
+#ident          stream  tcp     wait    identd  /usr/sbin/identd        identd
+....
+#krb_prop       stream  tcp     nowait  root    /usr/sbin/tcpd /usr/sbin/hpropd
+#kshell stream  tcp     nowait  root    /usr/sbin/tcpd /usr/lib/heimdal-servers/rshd -k
+#ftp    stream  tcp     nowait  root    /usr/sbin/tcpd /usr/lib/heimdal-servers/ftpd -a plain
+#telnet stream  tcp     nowait  root    /usr/sbin/tcpd /usr/lib/heimdal-servers/telnetd -a none
+#pop-3  stream  tcp     nowait  root    /usr/sbin/tcpd /usr/lib/heimdal-servers/popper
+#kx     stream  tcp     nowait  root    /usr/sbin/tcpd /usr/lib/heimdal-servers/kxd
+</PRE>
+riavviamo quindi inetd:
+<PRE>
+# /etc/init.d/openbsd-inetd restart
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00035200000000000000">
+Kerberos KDC</A>
+</H3>
+Configuriamo il Kerberos KDC modificando il file <SPAN  CLASS="textbf">/etc/krb5.conf</SPAN>
+<PRE>
+[libdefaults]
+        ticket_lifetime = 80000
+        renew_lifetime = 80000
+        default_realm = ESEMPIO.LAN 
+        default_keytab_name = FILE:/etc/krb5.keytab
+        default_etypes = des3-hmac-sha1 des-cbc-crc des-cbc-md5 des-cbc-md4 aes256-cts arcfour-hmac-md5
+        default_etypes_des = des3-hmac-sha1 des-cbc-crc des-cbc-md5 des-cbc-md4 aes256-cts arcfour-hmac-md5
+        default_tkt_enctypes = des3-hmac-sha1 des-cbc-crc des-cbc-md5 des-cbc-md4 aes256-cts arcfour-hmac-md5
+        default_tgs_enctypes = des3-hmac-sha1 des-cbc-crc des-cbc-md5 des-cbc-md4 aes256-cts arcfour-hmac-md5
+        kdc_timesync = 1
+        forwardable = true
+        proxiable = true
+
+# The following libdefaults parameters are only for Heimdal Kerberos.
+        v4_instance_resolve = false
+        v4_name_convert = {
+                host = {
+                        rcmd = host
+                        ftp = ftp
+                }
+                plain = {
+                        something = something-else
+                }
+        }
+
+[realms]
+ESEMPIO.LAN = {
+         kdc = pdc.esempio.lan 
+         admin_server = pdc.esempio.lan 
+         default_domain = esempio.lan
+}
+
+[domain_realm]
+        .esempio.lan  = ESEMPIO.LAN
+        esempio.lan  = ESEMPIO.LAN
+
+[kdc]
+    enable-kerberos4 = false
+    kdc_warn_pwexpire = 7
+    database = {
+        realm = ESEMPIO.LAN
+        dbname = ldap:ou=Users,dc=esempio,dc=lan
+        hdb-ldap-structural-object = inetOrgPerson
+        mkey_file = /var/lib/heimdal-kdc/m-key
+        acl_file = /etc/kadmind.acl
+        log_file = /var/log/kdc-db.log
+    }
+    hdb-ldap-create-base = ou=KerberosPrincipals,ou=Users,dc=esempio,dc=lan
+     
+[logging]
+        kdc = FILE:/var/log/heimdal/kdc.log
+        admin_server = FILE:/var/log/heimdal/admin.log
+        default = FILE:/var/log/heimdal/default.log
+
+[appdefaults]
+pam = {
+   ticket_lifetime = 1d
+   renew_lifetime = 1d
+   forwardable = true
+   proxiable = true
+}
+</PRE>
+
+<P>
+modifichiamo quindi le ACL del KDC: <SPAN  CLASS="textbf">/etc/kadmind.acl</SPAN>
+<PRE>
+ldapmaster/admin@ESEMPIO.LAN   add,delete,get    host/*@ESEMPIO.LAN
+*                              NO cpw            *@ESEMPIO.LAN
+kadmin/admin@ESEMPIO.LAN       all
+root/admin@ESEMPIO.LAN         all
+addmachine/admin@ESEMPIO.LAN   all
+</PRE>
+rimuoviamo i vecchi dati del kdc e riavviamo i servizi:
+<PRE>
+# mkdir -p /var/log/heimdal
+# rm -rf /etc/krb5.keytab
+# /etc/init.d/heimdal-kcm restart
+# /etc/init.d/heimdal-kdc restart
+</PRE>
+
+<P>
+
+<H3><A NAME="SECTION00035300000000000000">
+Inizializzazione reame Kerberos</A>
+</H3>
+Inizializziamo ora il reame kerberos:
+<PRE>
+# kstash --random-key
+# kadmin -l init --realm-max-ticket-life=unlimited --realm-max-renewable-life=unlimited ESEMPIO.LAN
+</PRE>
+e creiamo le chiavi per il server e i suoi servizi (samba e ldap):
+<PRE>
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= host/pdc.esempio.lan
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= host/pdc
+# kadmin -l ext_keytab host/pdc.esempio.lan
+# kadmin -l ext_keytab host/pdc
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= ldap/pdc.esempio.lan
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= ldap/pdc
+# kadmin -l ext_keytab -k /etc/ldap/ldap.keytab ldap/pdc.esempio.lan
+# kadmin -l ext_keytab -k /etc/ldap/ldap.keytab ldap/pdc
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= cifs/pdc.esempio.lan
+# kadmin -l add --random-key --max-ticket-life=unlimited --max-renewable-life=unlimited --expiration-time=never \
+   --pw-expiration-time=never --attributes= cifs/pdc
+# kadmin -l ext_keytab cifs/pdc.esempio.lan
+# kadmin -l ext_keytab cifs/pdc
+</PRE>
+sistemiamo ora i permessi per il <SPAN  CLASS="textit">keytab ldap</SPAN>:
+<PRE>
+# chown openldap.openldap /etc/ldap/ldap.keytab
+# chmod 400 /etc/ldap/ldap.keytab
+</PRE>
+e impostiamo la password per due principal kerberos:
+<PRE>
+# kadmin -l cpw --password=secret1 ldapmaster/admin
+# kadmin -l cpw --password=secret1 kadmin/admin
+</PRE>
+riavviamo ancora il kdc:
+<PRE>
+# /etc/init.d/heimdal-kcm restart
+# /etc/init.d/heimdal-kdc restart
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html227"
+  HREF="node10.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html223"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html217"
+  HREF="node8.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html225"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html228"
+  HREF="node10.html">Configurazione di SASL</A>
+<B> Up:</B> <A NAME="tex2html224"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html218"
+  HREF="node8.html">Configurazione di LDAP</A>
+ &nbsp; <B>  <A NAME="tex2html226"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

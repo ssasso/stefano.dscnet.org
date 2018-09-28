@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Test di funzionamento del Single Sing-On</TITLE>
+<META NAME="description" CONTENT="Test di funzionamento del Single Sing-On">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node25.html">
+<LINK REL="previous" HREF="node23.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node25.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html431"
+  HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html427"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html421"
+  HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html429"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html432"
+  HREF="node25.html">Fine!!! (e GDM)</A>
+<B> Up:</B> <A NAME="tex2html428"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html422"
+  HREF="node23.html">Riavvio dei servizi</A>
+ &nbsp; <B>  <A NAME="tex2html430"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION000411000000000000000">
+Test di funzionamento del Single Sing-On</A>
+</H2>
+Testiamo ora il Single Sign-On anche sul client:
+<PRE>
+# kinit stefano
+stefano@ESEMPIO.LAN's Password:
+# ldapwhoami -Y GSSAPI
+SASL/GSSAPI authentication started
+SASL username: stefano@ESEMPIO.LAN
+SASL SSF: 56
+SASL installing layers
+dn:uid=stefano,ou=users,dc=esempio,dc=lan
+Result: Success (0)
+# smbclient //pdc/netlogon -k
+OS=[Unix] Server=[Samba 3.0.24]
+smb: \&gt; ls
+  .                                   D        0  Tue Apr 14 14:44:05 2008
+  ..                                  D        0  Tue Apr 14 14:44:05 2008
+
+                57073 blocks of size 131072. 47323 blocks available
+smb: \&gt; quit
+
+# klist
+Credentials cache: FILE:/tmp/krb5cc_0
+        Principal: stefano@ESEMPIO.LAN
+
+  Issued           Expires          Principal
+Apr 16 14:50:07  Apr 17 13:03:38  krbtgt/ESEMPIO.LAN@ESEMPIO.LAN
+Apr 16 14:50:12  Apr 17 13:03:38  ldap/pdc.esempio.lan@ESEMPIO.LAN
+Apr 16 14:50:47  Apr 17 13:03:38  cifs/pdc.esempio.lan@ESEMPIO.LAN
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html431"
+  HREF="node25.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html427"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html421"
+  HREF="node23.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html429"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html432"
+  HREF="node25.html">Fine!!! (e GDM)</A>
+<B> Up:</B> <A NAME="tex2html428"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html422"
+  HREF="node23.html">Riavvio dei servizi</A>
+ &nbsp; <B>  <A NAME="tex2html430"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

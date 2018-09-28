@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Configurazione di SASL</TITLE>
+<META NAME="description" CONTENT="Configurazione di SASL">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node11.html">
+<LINK REL="previous" HREF="node9.html">
+<LINK REL="up" HREF="node4.html">
+<LINK REL="next" HREF="node11.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html242"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html238"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html232"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html240"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html243"
+  HREF="node11.html">Configurazione del PDC Samba</A>
+<B> Up:</B> <A NAME="tex2html239"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html233"
+  HREF="node9.html">Configurazione di Heimdal Kerberos</A>
+ &nbsp; <B>  <A NAME="tex2html241"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00036000000000000000">
+Configurazione di SASL</A>
+</H2>
+Configuriamo SASL per utilizzare il reame kerberos e le informazioni salvate su LDAP:
+
+<P>
+modifichiamo il file <SPAN  CLASS="textbf">/etc/default/saslauthd</SPAN>:
+<PRE>
+DESC="SASL Authentication Daemon"
+NAME="saslauthd"
+MECH_OPTIONS=""
+THREADS=5
+START=yes
+MECHANISMS="ldap"
+OPTIONS="-m /var/run/saslauthd"
+</PRE>
+il file <SPAN  CLASS="textbf">/usr/lib/sasl2/slapd.conf</SPAN>:
+<PRE>
+pwcheck_method: saslauthd
+</PRE>
+e il file <SPAN  CLASS="textbf">/etc/saslauthd.conf</SPAN>:
+<PRE>
+ldap_servers: ldap://127.0.0.1
+ldap_port: 389
+ldap_version: 3
+ldap_referrals: no
+ldap_search_base: dc=esempio,dc=lan
+</PRE>
+
+<P>
+sistemiamo i permessi e riavviamo il servizio
+<PRE>
+# chown openldap.openldap /usr/lib/sasl2/slapd.conf
+# chmod 400 /usr/lib/sasl2/slapd.conf
+# /etc/init.d/saslauthd restart
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html242"
+  HREF="node11.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html238"
+  HREF="node4.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html232"
+  HREF="node9.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html240"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html243"
+  HREF="node11.html">Configurazione del PDC Samba</A>
+<B> Up:</B> <A NAME="tex2html239"
+  HREF="node4.html">Configurazione del server</A>
+<B> Previous:</B> <A NAME="tex2html233"
+  HREF="node9.html">Configurazione di Heimdal Kerberos</A>
+ &nbsp; <B>  <A NAME="tex2html241"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

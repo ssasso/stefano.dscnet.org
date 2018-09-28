@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Installazione dei pacchetti necessari</TITLE>
+<META NAME="description" CONTENT="Installazione dei pacchetti necessari">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node16.html">
+<LINK REL="previous" HREF="node14.html">
+<LINK REL="up" HREF="node13.html">
+<LINK REL="next" HREF="node16.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html320"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html316"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html310"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html318"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html321"
+  HREF="node16.html">Configurazione NTP</A>
+<B> Up:</B> <A NAME="tex2html317"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html311"
+  HREF="node14.html">Configurazione iniziale</A>
+ &nbsp; <B>  <A NAME="tex2html319"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00042000000000000000">
+Installazione dei pacchetti necessari</A>
+</H2>
+Passiamo all'installazione dei pacchetti:
+<PRE>
+# DEBIAN_FRONTEND=noninteractive
+# export DEBIAN_FRONTEND=noninteractive
+# apt-get update
+# apt-get install -y heimdal-clients krb5-config libnss-ldap libsasl2-modules-gssapi-heimdal \
+ldap-utils libpam-krb5 libpam-ldap cupsys-common libcupsys2 keyutils winbind smbclient samba \
+samba-common smbfs libsmbclient ipcalc dnsutils ntp
+# unset DEBIAN_PRIORITY
+# unset DEBIAN_FRONTEND
+</PRE>
+
+<P>
+fermiamo ora i servizi appena installati:
+<PRE>
+# /etc/init.d/samba stop
+# /etc/init.d/winbind stop
+# /etc/init.d/ntp stop
+</PRE>
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html320"
+  HREF="node16.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html316"
+  HREF="node13.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html310"
+  HREF="node14.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html318"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html321"
+  HREF="node16.html">Configurazione NTP</A>
+<B> Up:</B> <A NAME="tex2html317"
+  HREF="node13.html">Configurazione dei client GNU/Linux</A>
+<B> Previous:</B> <A NAME="tex2html311"
+  HREF="node14.html">Configurazione iniziale</A>
+ &nbsp; <B>  <A NAME="tex2html319"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

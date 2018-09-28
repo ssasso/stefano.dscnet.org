@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/a/</loc>
+    <lastmod>2018-03-04T13:23:10+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/about/</loc>
+    <lastmod>2018-03-03T13:50:49+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/a/test2/</loc>
+    <lastmod>2018-03-04T13:23:10+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/first-post/</loc>
+    <lastmod>2018-03-03T13:23:10+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/a/multivendor_mpls_l3vpn/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/bgp/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/cisco/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/getting-started/</loc>
+    <lastmod>2018-03-04T13:23:10+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2018-03-03T13:50:49+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/juniper/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/l3vpn/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/mikrotik/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/mpls/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/posts/</loc>
+    <lastmod>2018-03-03T13:23:10+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/vpn/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/vpnv4/</loc>
+    <lastmod>2013-12-27T13:00:00+01:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

@@ -1,0 +1,13 @@
++++
+title = "Title"
+date = 2013-12-27
+draft = false
+tags = ["tag"]
+
+[[resources]]
+src = "Multivendor_MPLS_L3VPN.pdf"
++++
+
+text here
+
+{{< pdfattachments >}}

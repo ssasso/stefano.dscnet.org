@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Tecnologie utilizzate</TITLE>
+<META NAME="description" CONTENT="Tecnologie utilizzate">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="previous" HREF="node2.html">
+<LINK REL="up" HREF="node2.html">
+<LINK REL="next" HREF="node4.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html119"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html115"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html111"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html117"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html120"
+  HREF="node4.html">Configurazione del server</A>
+<B> Up:</B> <A NAME="tex2html116"
+  HREF="node2.html">Introduzione</A>
+<B> Previous:</B> <A NAME="tex2html112"
+  HREF="node2.html">Introduzione</A>
+ &nbsp; <B>  <A NAME="tex2html118"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html121"
+  HREF="node3.html#SECTION00021100000000000000">Heimdal Kerberos</A>
+<LI><A NAME="tex2html122"
+  HREF="node3.html#SECTION00021200000000000000">OpenLDAP</A>
+<LI><A NAME="tex2html123"
+  HREF="node3.html#SECTION00021300000000000000">OpenSSL</A>
+<LI><A NAME="tex2html124"
+  HREF="node3.html#SECTION00021400000000000000">Cyrus SASL</A>
+<LI><A NAME="tex2html125"
+  HREF="node3.html#SECTION00021500000000000000">NSSwitch</A>
+<LI><A NAME="tex2html126"
+  HREF="node3.html#SECTION00021600000000000000">PAM-Krb5</A>
+<LI><A NAME="tex2html127"
+  HREF="node3.html#SECTION00021700000000000000">Bind</A>
+<LI><A NAME="tex2html128"
+  HREF="node3.html#SECTION00021800000000000000">Samba</A>
+</UL>
+<!--End of Table of Child-Links-->
+<HR>
+
+<H2><A NAME="SECTION00021000000000000000">
+Tecnologie utilizzate</A>
+</H2>
+
+<H3><A NAME="SECTION00021100000000000000">
+Heimdal Kerberos</A>
+</H3>
+La cosa fondamentale della nostra implementazione è Kerberos. Attualmente ci sono due implementazioni libere di Kerberos: MIT Kerberos e Heimdal. Perchè scegliere Heimdal invece di MIT Kerberos?
+
+<P>
+Fondamentalmente perchè Heimdal supporta la memorizzazione dei dati in un albero LDAP; in questo modo siamo in grado di centralizzare tutti i dati in un unico luogo e saremo in grado di creare un nuovo principal Kerberos solo creando la voce appropriata in LDAP.
+
+<P>
+
+<H3><A NAME="SECTION00021200000000000000">
+OpenLDAP</A>
+</H3>
+Kerberos fornisce un protocollo di autenticazione, ma per quanto riguarda l'autorizzazione abbiamo bisogno di centralizzare, anche in questo caso, tutte le informazioni. LDAP, nella sua implementazione libera OpenLDAP, ci consentirà di memorizzare al suo interno tutte le informazioni sugli utenti della nostra rete.
+
+<P>
+
+<H3><A NAME="SECTION00021300000000000000">
+OpenSSL</A>
+</H3>
+Verrà utilizzato SSL (Secure Socket Layer) per garantire la sicurezza nelle connessioni al server OpenLDAP
+
+<P>
+
+<H3><A NAME="SECTION00021400000000000000">
+Cyrus SASL</A>
+</H3>
+SASL è Simple Authentication and Security Layer, un metodo per aggiungere il supporto all'autenticazione a diversi protocolli di rete. Nella nostra "infrastruttura" verrà utilizzato a sostegno delle connessioni al server OpenLDAP. Inoltre, assieme a Kerberos, sarà in grado di fornire soluzioni si "Single Sign-On" ai servizi presenti nella nostra rete.
+
+<P>
+
+<H3><A NAME="SECTION00021500000000000000">
+NSSwitch</A>
+</H3>
+La libreria nss-ldap ci consentirà di recuperare le informazioni dei nostri utenti dal server OpenLDAP
+
+<P>
+
+<H3><A NAME="SECTION00021600000000000000">
+PAM-Krb5</A>
+</H3>
+La libreria pam-krb5 ci consentirà di autenticare i nostri utenti su Kerberos
+
+<P>
+
+<H3><A NAME="SECTION00021700000000000000">
+Bind</A>
+</H3>
+Un servizio fondamentale per il corretto funzionamento di Kerberos è il DNS. Per questo utilizzeremo Bind.
+
+<P>
+
+<H3><A NAME="SECTION00021800000000000000">
+Samba</A>
+</H3>
+Samba è un server e una serie di strumenti che consentono la corretta comunicazione tra macchine Windows e Unix e la condivisione dei servizi (file, directory, stampa) tramite i protocolli SMB e CIFS. Con Samba è possibile condividere file e stampanti, controllare il livello di accesso dei vari utenti, creare server WINS o di Dominio. Nella maggior parte dei casi il controllo degli accessi in Samba è più dettagliato e personalizzabile rispetto a Windows stesso.
+
+<P>
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html119"
+  HREF="node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html115"
+  HREF="node2.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html111"
+  HREF="node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html117"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html120"
+  HREF="node4.html">Configurazione del server</A>
+<B> Up:</B> <A NAME="tex2html116"
+  HREF="node2.html">Introduzione</A>
+<B> Previous:</B> <A NAME="tex2html112"
+  HREF="node2.html">Introduzione</A>
+ &nbsp; <B>  <A NAME="tex2html118"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

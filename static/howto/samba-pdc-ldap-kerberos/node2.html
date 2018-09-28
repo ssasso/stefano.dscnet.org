@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Introduzione</TITLE>
+<META NAME="description" CONTENT="Introduzione">
+<META NAME="keywords" CONTENT="samba-pdc-ldap-kerberos">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="samba-pdc-ldap-kerberos.css">
+
+<LINK REL="next" HREF="node4.html">
+<LINK REL="previous" HREF="node1.html">
+<LINK REL="up" HREF="samba-pdc-ldap-kerberos.html">
+<LINK REL="next" HREF="node3.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html100"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html96"
+  HREF="samba-pdc-ldap-kerberos.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html90"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html98"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html101"
+  HREF="node3.html">Tecnologie utilizzate</A>
+<B> Up:</B> <A NAME="tex2html97"
+  HREF="samba-pdc-ldap-kerberos.html">Samba PDC con LDAP</A>
+<B> Previous:</B> <A NAME="tex2html91"
+  HREF="node1.html">Indice</A>
+ &nbsp; <B>  <A NAME="tex2html99"
+  HREF="node1.html">Indice</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION00020000000000000000">
+Introduzione</A>
+</H1>
+Vedremo in questa guida come creare un PDC Samba che sia anche un KDC Kerberos e che abbia le informazioni sugli utenti salvate in un albero LDAP.
+
+<P>
+Le istruzioni si riferiranno a Ubuntu Server 8.04LTS ma possono essere applicate a qualsiasi distribuzione.
+
+<P>
+Con questa guida sarà possibile integrare l'autenticazione di macchine Windows e Unix in un ambiente misto. Il server configurato fornirà quindi le informazioni di autenticazione e autorizzazione per entrambi i sistemi.
+
+<P>
+Prima di iniziare ecco alcune note:
+
+<UL>
+<LI>Questo HOWTO è per utenti avanzati, che conoscono il protocollo DNS e Bind, Samba, LDAP, NTP e Kerberos.
+</LI>
+<LI>Leggere con attenzione, perchè saltando alcuni passaggi si può giungere ad una soluzione non funzionante.
+</LI>
+<LI>Questo HOWTO dovrebbe essere usato da chi ha un ambiente di client misti Windows-Linux. Se i client sono solo Windows si possono trovare altri howto che utilizzano solo Samba e LDAP e semplificano la vita.
+</LI>
+</UL>
+
+<P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A NAME="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A NAME="tex2html102"
+  HREF="node3.html">Tecnologie utilizzate</A>
+<UL>
+<LI><A NAME="tex2html103"
+  HREF="node3.html#SECTION00021100000000000000">Heimdal Kerberos</A>
+<LI><A NAME="tex2html104"
+  HREF="node3.html#SECTION00021200000000000000">OpenLDAP</A>
+<LI><A NAME="tex2html105"
+  HREF="node3.html#SECTION00021300000000000000">OpenSSL</A>
+<LI><A NAME="tex2html106"
+  HREF="node3.html#SECTION00021400000000000000">Cyrus SASL</A>
+<LI><A NAME="tex2html107"
+  HREF="node3.html#SECTION00021500000000000000">NSSwitch</A>
+<LI><A NAME="tex2html108"
+  HREF="node3.html#SECTION00021600000000000000">PAM-Krb5</A>
+<LI><A NAME="tex2html109"
+  HREF="node3.html#SECTION00021700000000000000">Bind</A>
+<LI><A NAME="tex2html110"
+  HREF="node3.html#SECTION00021800000000000000">Samba</A>
+</UL></UL>
+<!--End of Table of Child-Links-->
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html100"
+  HREF="node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html96"
+  HREF="samba-pdc-ldap-kerberos.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html90"
+  HREF="node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html98"
+  HREF="node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A>  
+<BR>
+<B> Next:</B> <A NAME="tex2html101"
+  HREF="node3.html">Tecnologie utilizzate</A>
+<B> Up:</B> <A NAME="tex2html97"
+  HREF="samba-pdc-ldap-kerberos.html">Samba PDC con LDAP</A>
+<B> Previous:</B> <A NAME="tex2html91"
+  HREF="node1.html">Indice</A>
+ &nbsp; <B>  <A NAME="tex2html99"
+  HREF="node1.html">Indice</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Stefano Sasso
+2009-04-16
+</ADDRESS>
+</BODY>
+</HTML>

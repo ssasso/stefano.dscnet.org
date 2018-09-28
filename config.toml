@@ -1,0 +1,36 @@
+baseurl = ""
+relativeurls = true
+title = "Stefano's notebook"
+copyright = "Copyright &copy; Stefano Sasso"
+canonifyurls = true
+theme = "sthugo"
+
+paginate = 10
+
+summaryLength = 30
+enableEmoji = true
+pygmentsCodeFences = true
+
+googleAnalytics = "UA-3192030-1"
+
+[author]
+    name = "Stefano Sasso"
+    github = ""
+    gitlab = ""
+    linkedin = "ssasso"
+    facebook = ""
+    twitter = ""
+    instagram = ""
+
+[params]
+    tagline = "my technical writings"
+
+[[menu.main]]
+    name = "Home" #Name in the navigation bar
+    weight = 10 #The larger the weight, the more on the right this item will be
+    url = "/" #URL address
+[[menu.main]]
+    name = "Tags"
+    weight = 25
+    url = "/tags/"
+
