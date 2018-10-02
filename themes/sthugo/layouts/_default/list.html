@@ -23,7 +23,7 @@
             <br />
 			{{ if .Params.categories }}
 				<em class="listem">
-					{{ range $i, $c := .Params.categories }}
+					{{ range $i, $c := sort .Params.categories }}
 						{{ if $i }}, {{ end }}
 						<a href="/categories/{{$c | urlize }}/">{{ $c }}</a>
 					{{ end }}
@@ -32,7 +32,7 @@
 
 			{{ if .Params.tags }}
 				<em class="listem">
-					{{ range $i, $t := .Params.tags }}
+					{{ range $i, $t := sort .Params.tags }}
 						{{ if $i }}, {{ end }}
 						<a href="/tags/{{$t | urlize }}/">#{{ $t }}</a>
 					{{ end }}
