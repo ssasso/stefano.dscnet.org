@@ -16,6 +16,6 @@ P router: Mikrotik
 BGP RR router: Mikrotik
 PE router: Mikrotik, Cisco 7200, Juniper JunOS 10
 
-![Multivendor MPLS L3VPN Topology](multivendor_topology.png)
+![Multivendor MPLS L3VPN Topology](multivendor_topology.png#mid)
 
 {{< pdfattachments >}}
