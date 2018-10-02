@@ -1,5 +1,5 @@
 baseurl = ""
-relativeurls = true
+#relativeurls = true
 title = "Stefano's notebook"
 copyright = "Copyright &copy; Stefano Sasso"
 canonifyurls = true
