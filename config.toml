@@ -25,6 +25,9 @@ googleAnalytics = "UA-3192030-1"
 [params]
     tagline = "my technical writings"
 
+[markup.goldmark.renderer]
+    unsafe= true
+
 [[menu.main]]
     name = "Home" #Name in the navigation bar
     weight = 10 #The larger the weight, the more on the right this item will be

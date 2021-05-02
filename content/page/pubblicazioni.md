@@ -8,7 +8,7 @@ weight = "21" #Right-most nav item
 meta = "false" #Do not display tags or categories
 +++
 
-Alcuni manuali scaricabili o leggibili online che ho scritto:
+Alcuni manuali (*in italiano*) scaricabili o leggibili online che ho scritto:
 
 * [Appunti su PF e OpenBSD](/page/appunti_su_pf_e_openbsd)
 * [Exim4 passo dopo passo](/page/exim4_passo_dopo_passo)
