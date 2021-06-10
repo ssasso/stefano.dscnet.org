@@ -92,6 +92,7 @@ set security ipsec vpn hub-spoke-1 establish-tunnels immediately
 set security zones security-zone Internet host-inbound-traffic system-services ping
 set security zones security-zone Internet host-inbound-traffic system-services ike
 set security zones security-zone Internet interfaces ge-0/0/0.0
+
 set security zones security-zone VPN host-inbound-traffic system-services ping
 set security zones security-zone VPN host-inbound-traffic protocols bgp
 set security zones security-zone VPN interfaces st0.2
