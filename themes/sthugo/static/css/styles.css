@@ -269,6 +269,58 @@ a {
   }
 }
 
+
+
+
+
+.small-image, figure.small img, img[src*="small"] {
+  width: 75%;
+  box-shadow: 0 3px 3px #bbbbbb;
+}
+
+@supports (width: 100vw) {
+  .small-image, figure.small img, img[src*="small"] {
+    width: 400px;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -200px;
+    margin-right: -200px;
+  }
+  @media only screen and (max-width: 800px) {
+    .small-image, figure.small img, img[src*="small"] {
+      width: 75%;
+      left: 0;
+      right: 0;
+      margin: 0;
+    }
+  }
+}
+
+.sixhundreds-image, figure.sixhundreds img, img[src*="sixhundreds"] {
+  width: 600px;
+  box-shadow: 0 3px 3px #bbbbbb;
+}
+
+@supports (width: 100vw) {
+  .sixhundreds-image, figure.sixhundreds img, img[src*="sixhundreds"] {
+    width: 600px;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -300px;
+    margin-right: -300px;
+  }
+  @media only screen and (max-width: 800px) {
+    .sixhundreds-image, figure.sixhundreds img, img[src*="sixhundreds"] {
+      width: 600px;
+      left: 0;
+      right: 0;
+      margin: 0;
+    }
+  }
+}
+
 .float-image, figure.float img, img[src*="float"] {
   width: 300px;
   float: left;
