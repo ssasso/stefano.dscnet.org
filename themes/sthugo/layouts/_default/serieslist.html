@@ -1,0 +1,39 @@
+{{ define "main" }}
+
+{{ partial "article" . }}
+
+{{- $plist := where .Site.Pages "Params.series" "intersect" (slice .Params.listseries) -}}
+
+<section id="list">
+
+    <ul>
+        {{ range sort $plist "Params.date" "asc" }}
+        <li>
+            <b><a href="{{ .Permalink }}">{{ if .Draft }}DRAFT: {{end}}{{ .Title | markdownify }}</a></b>
+            <time class="date-meta">{{ .Date.Format "Jan 2" }}</time>
+            <br />
+                        {{ if .Params.categories }}
+                                <em class="listem">
+                                        {{ range $i, $c := sort .Params.categories }}
+                                                {{ if $i }}, {{ end }}
+                                                <a href="/categories/{{$c | urlize }}/">{{ $c }}</a>
+                                        {{ end }}
+                                </em>
+                        {{ end }}
+
+                        {{ if .Params.tags }}
+                                <em class="listem">
+                                        {{ range $i, $t := sort .Params.tags }}
+                                                {{ if $i }}, {{ end }}
+                                                <a href="/tags/{{$t | urlize }}/">#{{ $t }}</a>
+                                        {{ end }}
+                                </em>
+                        {{ end }}
+        </li>
+        {{ end }}
+    </ul>
+
+</section>
+
+{{ end }}
+

@@ -8,6 +8,10 @@ weight = "21" #Right-most nav item
 meta = "false" #Do not display tags or categories
 +++
 
+Article series:
+
+* [VXLAN and EVPN](/page/evpnseries)
+
 Alcuni manuali (*in italiano*) scaricabili o leggibili online che ho scritto:
 
 * [Appunti su PF e OpenBSD](/page/appunti_su_pf_e_openbsd)

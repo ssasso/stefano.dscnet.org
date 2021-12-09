@@ -3,6 +3,7 @@ title = "EVPN and VXLAN Episode 2: EVPN Route Types and routing"
 date = 2021-11-08
 draft = false
 tags = ["evpn", "vxlan", "bgp", "datacenter", "overlay", "nvo", "dell", "dellos10", "os10", "arista", "veos"]
+series = ["evpn"]
 categories = []
 
 +++

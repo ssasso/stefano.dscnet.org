@@ -3,6 +3,7 @@ title = "The magic world of EVPN and VXLAN (EVPN and VXLAN Episode 1)"
 date = 2021-11-07
 draft = false
 tags = ["evpn", "vxlan", "bgp", "datacenter", "overlay", "nvo", "dell", "dellos10", "os10"]
+series = ["evpn"]
 categories = []
 
 +++

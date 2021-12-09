@@ -3,6 +3,7 @@ title = "EVPN and VXLAN Episode 3: Symmetric IRB"
 date = 2021-12-04
 draft = false
 tags = ["evpn", "vxlan", "bgp", "datacenter", "overlay", "nvo", "dell", "dellos10", "os10", "arista", "veos"]
+series = ["evpn"]
 categories = []
 
 +++
