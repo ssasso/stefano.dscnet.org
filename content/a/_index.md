@@ -1,6 +1,6 @@
 +++
-title = "Notes"
+title = "Blog"
 menu = "main"
 weight = "15"
-aliases = [ "/notes/" ]
+aliases = [ "/notes/", "/blog/" ]
 +++
