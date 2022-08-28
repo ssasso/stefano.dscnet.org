@@ -100,4 +100,4 @@ The *box* file can be imported into *Vagrant* with:
 vagrant box add chr-6.49.1.box --name mikrotik/chr
 ```
 
-**NOTE**: this *Vagrant* box image has been created for use with the **netsim-tools**: https://github.com/ipspace/netsim-tools
+**NOTE**: this *Vagrant* box image has been created for use with the **netlab** (formerly *netsim-tools*): https://github.com/ipspace/netlab
