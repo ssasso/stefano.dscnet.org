@@ -6,8 +6,8 @@ tags = ["bgp", "router"]
 +++
 **W**e **L**ove **A**ll **O**ur **M**others
 
-> **W**eight (cisco only) <br/>
+> **W**eight <br/>
 > **L**ocal preference <br/>
-> **A**utonomous system <br/>
+> **A**S Path <br/>
 > **O**rigin <br/>
 > **M**ed
