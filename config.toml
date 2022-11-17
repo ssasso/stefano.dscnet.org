@@ -11,7 +11,7 @@ summaryLength = 30
 enableEmoji = true
 pygmentsCodeFences = true
 
-googleAnalytics = "UA-3192030-1"
+googleAnalytics = "G-WH2RCBGTGT"
 
 [author]
     name = "Stefano Sasso"
