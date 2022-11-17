@@ -1,7 +1,7 @@
 baseurl = ""
 #relativeurls = true
 title = "Stefano's notebook"
-copyright = "Copyright &copy; Stefano Sasso"
+copyright = "Copyright &copy; Stefano Sasso -- this website uses technical cookies. Leave the website if you don't like it."
 canonifyurls = true
 theme = "sthugo"
 
