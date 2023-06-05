@@ -11,6 +11,7 @@ summaryLength = 30
 enableEmoji = true
 pygmentsCodeFences = true
 
+# GA-4
 googleAnalytics = "G-WH2RCBGTGT"
 
 [author]
