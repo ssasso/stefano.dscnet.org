@@ -11,6 +11,8 @@ aliases = [
 
 > *Edit 2022-08*: *netsim-tools* was renamed to **netlab** on release *1.3*.
 
+> *Edit 2023-06*: new documentation url is [netlab.tools](https://netlab.tools/)
+
 While working on the <u>[VXLAN and EVPN Series]({{< ref "/page/evpnseries" >}} "VXLAN and EVPN Series")</u> I started looking around searching for a good way to automate the configuration of my GNS3 appliances used in the different LABs.
 
 Ansible was a natural choice, since I was already using it for configuring *Dell OS10* and other devices at work.
@@ -28,7 +30,7 @@ This is why I added support for Mikrotik CHR and VyOS, and their configurations.
 
 If you are interested in discovering more about *netlab*, have a look at these links:
 * [netlab posts on Ivan's Blog](https://blog.ipspace.net/series/netlab.html);
-* [netlab official documentation](https://netsim-tools.readthedocs.io/en/latest/);
+* [netlab official documentation](https://netlab.tools/);
 * [netlab github repository](https://github.com/ipspace/netlab).
 
 I promise you will like it! ;)
@@ -51,7 +53,7 @@ nodes:
 links: [ a-b, b-y, y-linux ]
 ```
 
-Going back to the original topic, EVPN support in netlab is still under development, and more other features are to be developed. But [you can contribute](https://netsim-tools.readthedocs.io/en/latest/dev/guidelines.html) to it, if you wish! ;)
+Going back to the original topic, EVPN support in netlab is still under development, and more other features are to be developed. But [you can contribute](https://netlab.tools/dev/guidelines/) to it, if you wish! ;)
 
 In the meantime, I have a set of additional Ansible templates that you can use to configure an [Arista EOS-based topology](https://github.com/ssasso/netsim-topologies/tree/main/evpn_vxlan_01), and another example for [MLAG](https://github.com/ssasso/netsim-topologies/tree/main/arista_mlag) as well.
 
