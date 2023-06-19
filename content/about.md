@@ -7,7 +7,7 @@ meta = "false" #Do not display tags or categories
 +++
 
 ## Hello!
-> My name is **Stefano Sasso**, and I work as Principal Cloud & Network Architect for <a href="https://www.athonet.com/" target="_BLANK">ATHONET</a>.
+> My name is **Stefano Sasso**, and I work as Principal Cloud & Network Architect for <a href="https://www.athonet.com/" target="_BLANK">ATHONET</a>, a Hewlett Packard Enterprise company.
 > 
 > During my work career, I had many roles: from SysAdmin and Network Engineer to Network Architect, and then the Principal Architect for advanced Cloud projects, but also for more traditionals networking projects.
 > 
@@ -17,7 +17,7 @@ meta = "false" #Do not display tags or categories
 > And the sources file are accessible on <a href="https://github.com/ssasso/stefano.dscnet.org" target="_BLANK">GitHub</a>.
 
 ## Ciao!
-> Sono **Stefano Sasso**, Principal Cloud & Network Architect per <a href="https://www.athonet.com/" target="_BLANK">ATHONET</a>.
+> Sono **Stefano Sasso**, Principal Cloud & Network Architect per <a href="https://www.athonet.com/" target="_BLANK">ATHONET</a>, a Hewlett Packard Enterprise company.
 > 
 > Nella mia carriera lavorativa ho ricoperto vari ruoli: dal SysAdmin e Network Engineer, fino a diventare Network Architect e poi Principal Architect per progetti Cloud avanzati o anche per progetti di rete più tradizionali.
 > 
