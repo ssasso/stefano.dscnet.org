@@ -1,7 +1,7 @@
 +++
 title = "Multi Vendor EVPN and VXLAN Fabric"
 date = 2023-12-22
-draft = false
+draft = true
 tags = ["evpn", "vxlan", "bgp", "datacenter", "overlay", "nvo", "dell", "dellos10", "os10", "aruba", "arubacx", "cx", "containerlab", "netlab", "netsim-tools", "hpe", "hpearuba", "hpearubanetworking"]
 series = ["evpn"]
 categories = []
