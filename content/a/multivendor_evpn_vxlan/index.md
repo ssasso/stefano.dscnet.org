@@ -322,7 +322,7 @@ And, after some pings, we can see our ARP table correctly populated.
 
 As an intermediate step, before working on a real EVPN fabric with MCLAG, let's try a simple **MCLAG + ECMP** routing topology.
 
-We will have an aggregation switch, connected using **Layer 3 only** to the VSX Pair. The VSX Pair then it's connected to a Layer 2 peer with a LAG (this is a *classical* topology you can find in all the ArubaCX guides and validated designs - see below).
+We will have an aggregation switch, connected using **Layer 3 only** to the VSX Pair (using ECMP routes, of course). The VSX Pair then it's connected to a Layer 2 peer with a LAG (this is a *classical* topology you can find in all the ArubaCX guides and validated designs - see below).
 
 ![](t2_3/arubacx1.png#mid)
 
