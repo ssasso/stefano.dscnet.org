@@ -1,7 +1,7 @@
 +++
 title = "Multi Vendor EVPN and VXLAN Fabric"
-date = 2023-12-22
-draft = true
+date = 2023-12-23
+draft = false
 tags = ["evpn", "vxlan", "bgp", "datacenter", "overlay", "nvo", "dell", "dellos10", "os10", "aruba", "arubacx", "cx", "containerlab", "netlab", "netsim-tools", "hpe", "hpearuba", "hpearubanetworking"]
 series = ["evpn"]
 categories = []
@@ -120,6 +120,8 @@ This topology is composed of 2 Dell OS10 Spine switches, 1 Dell Leaf, 1 Aruba Le
 
 * Two hosts (h1, h2) are on the same VLAN (red), but connected to the two different switches.
 * Two hosts (h3, h4) are on different VLANs (blue, green) and on different switches.
+
+![](TEST_1.png#small)
 
 The scope of this is to test both **L2VNI and L3VNI, with Symmetric IRB**.
 
@@ -253,6 +255,8 @@ SO FAR SO GOOD!
 
 Let's try to add an external router, with a BGP peering to L2 (which acts as a border leaf).
 
+![](TEST_1_1.png#sixhundreds)
+
 The new topology is [here](https://github.com/ssasso/netsim-topologies/blob/main/multivendor-evpn/test1.1/topology.yml).
 
 Let's check the routing tables on L1, and try a reachability check from H3 (which is connected to L1):
@@ -278,6 +282,8 @@ Let's start with a **simple LAG**, with VLANs, between a Dell OS10 device and an
 
 The topology, with a custom plugin and multiple config templates (one for each device model), can be found [here on github](https://github.com/ssasso/netsim-topologies/tree/main/multivendor-evpn/test2.1).
 
+![](TEST_2_1.png#small)
+
 We are going to create two lags: one with a single VLAN in access mode (`lag 1`), and another with a VLAN Trunk, plus a native VLAN.
 
 As a first step, let's verify the LAG Statuses:
@@ -299,6 +305,8 @@ ALL LOOKS GOOD!
 ## Test 2.2
 
 This is similar to Test 2.1... but we are going to introduce MC-LAG!
+
+![](TEST_2_2.png#small)
 
 We do so by introducing other parameters (always defined in our plugin), plus additional settings in the custom templates.
 
@@ -322,9 +330,11 @@ And, after some pings, we can see our ARP table correctly populated.
 
 As an intermediate step, before working on a real EVPN fabric with MCLAG, let's try a simple **MCLAG + ECMP** routing topology.
 
+![](TEST_2_3.png#small)
+
 We will have an aggregation switch, connected using **Layer 3 only** to the VSX Pair (using ECMP routes, of course). The VSX Pair then it's connected to a Layer 2 peer with a LAG (this is a *classical* topology you can find in all the ArubaCX guides and validated designs - see below).
 
-![](t2_3/arubacx1.png#mid)
+![](t2_3/arubacx1.png#small)
 
 **NOTE**: In our *simplified* topology, we call `aggr` the core switch layer of the above picture, and we use only a single switch for that.
 
@@ -340,6 +350,8 @@ But, before doing that, We need to extend our plugin/data model to support a "*T
 ## Test 3
 
 Ok, it's time to add MCLAG to our fabric! For the first test, I decided to try VXLAN only with static flooding.
+
+![](TEST_3.png#small)
 
 But, prior to doing so, we need to extend again our plugins/data model to take care of a transit VLAN (between VSX/VLT nodes).
 
@@ -380,7 +392,9 @@ IT SEEMS “EVERYTHING” IS BROKEN… We need to deal with the fact that AOS-CX
 
 ## Test 3.1
 
-Since we arrived here at this point, let's *at least* try to see if the templates and plugins I wrote for **Anycast VTEP** are working fine. I will revert the *Test 3* [topology](https://github.com/ssasso/netsim-topologies/tree/main/multivendor-evpn/test3.1) to having a VLT couple and only a single CX switch.
+Since we arrived here at this point, let's *at least* try to see if the templates and plugins I wrote for **Anycast VTEP** are working fine. I will "revert" the *Test 3* [topology](https://github.com/ssasso/netsim-topologies/tree/main/multivendor-evpn/test3.1) to having a VLT couple and only a single CX switch.
+
+![](TEST_3_1.png#small)
 
 Let's start immediately with a ping from CL1 to CL2:
 
