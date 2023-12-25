@@ -19,7 +19,7 @@ Since the company now became <u>Athonet, a Hewlett Packard Enterprise Acquisitio
 We want, of course, to insert them in the existing fabric, starting from the Leaf switches.
 
 For that reason I thought it could be good to do some interop testing using virtual devices before starting to work with the real gear.
-And, obviously, I don't want to waste time with IP Address allocation, IP Address assignment to the different VIrtual Switches interfaces... So I will use [netlab](https://netlab.tools/) :innocent:
+And, obviously, I don't want to waste time with IP Address allocation, IP Address assignment to the different Virtual Switches interfaces... So I will use [netlab](https://netlab.tools/) :innocent:
 
 The different leaf switches are connected to the spines using IPv4 point to point interfaces, with */30 subnets*. OSPF is used to redistribute the loopback ip addresses, used for iBGP EVPN peerings and as VTEP addresses.
 
@@ -110,7 +110,7 @@ Great! Let's move on. :cowboy_hat_face:
 
 ## Test 1
 
-Now that we verified basic functionalities like OSPF and iBGP, we can start creati our EVPN Fabric.
+Now that we verified basic functionalities like OSPF and iBGP, we can start creating our EVPN Fabric.
 
 Creating it using netlab, defining one VRF and 3 VLANs, and related VNIs, should be straightforward.
 
