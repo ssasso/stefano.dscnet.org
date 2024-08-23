@@ -15,7 +15,7 @@
     </ul>
 </section>
 -->
-    {{ if .Site.DisqusShortname }}
+    {{ if .Site.Config.Services.Disqus.Shortname }}
         {{ partial "disqus" . }}
     {{ end }}
 {{ end }}

@@ -14,7 +14,10 @@ pygmentsCodeFences = true
 # GA-4
 googleAnalytics = "G-WH2RCBGTGT"
 
-[author]
+[params]
+    tagline = "my technical writings"
+
+[params.author]
     name = "Stefano Sasso"
     github = "ssasso"
     gitlab = ""
@@ -22,9 +25,6 @@ googleAnalytics = "G-WH2RCBGTGT"
     facebook = ""
     twitter = "rfc2821"
     instagram = ""
-
-[params]
-    tagline = "my technical writings"
 
 [markup.goldmark.renderer]
     unsafe= true
