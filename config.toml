@@ -23,7 +23,7 @@ googleAnalytics = "G-WH2RCBGTGT"
     gitlab = ""
     linkedin = "ssasso"
     facebook = ""
-    twitter = "rfc2821"
+    twitter = ""
     instagram = ""
 
 [markup.goldmark.renderer]
